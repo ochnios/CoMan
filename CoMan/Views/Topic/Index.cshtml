@@ -1,0 +1,54 @@
+﻿@model IEnumerable<CoMan.Models.TopicModel>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>TopicList</h1>
+
+<p>
+    <a asp-action="Create">Add topic</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.AddedDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.StudentLimit)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.AddedDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StudentLimit)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id=item.TopicId }) |
+                    @Html.ActionLink("Details", "Details", new { id=item.TopicId }) |
+                    @Html.ActionLink("Delete", "Delete", new { id=item.TopicId })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
