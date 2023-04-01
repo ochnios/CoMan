@@ -6,6 +6,7 @@ namespace CoMan.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
+        public DbSet<TopicModel> Topics { get; set; } = null!;
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {
