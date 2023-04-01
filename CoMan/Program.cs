@@ -15,6 +15,7 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<IRepository<TopicModel>, Repository<TopicModel>>();
+builder.Services.AddTransient<IRepository<CooperationRequestModel>, Repository<CooperationRequestModel>>();
 
 var app = builder.Build();
 
@@ -44,6 +45,10 @@ app.MapControllerRoute(
 app.MapControllerRoute(
     name: "topics",
     pattern: "{controller=Topic}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "cooperationRequests",
+    pattern: "{controller=CooperationRequest}/{action=Index}/{id?}");
+
 app.MapRazorPages();
 
 app.Run();
