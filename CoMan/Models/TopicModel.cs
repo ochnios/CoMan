@@ -11,28 +11,29 @@ namespace CoMan.Models
         Archived
     }
 
-    public class TopicModel
+    [Table("Topics")]
+    public class TopicModel : EntityBase
     {
         [Key]
-        public int TopicId { get; set; }
+        public int Id { get; set; }
 
         [Required]
         [DisplayName("Date added")]
-        public DateTime? AddedDate { get; set; }
+        public DateTime AddedDate { get; set; }
 
         [Required]
         [DisplayName("Title")]
-        public string? Title { get; set; }
+        public string Title { get; set; } = null!;
 
         [DisplayName("Description")]
         public string? Description { get; set; }
 
         [Required]
         [DisplayName("Student limit")]
-        public int? StudentLimit { get; set; }
+        public int StudentLimit { get; set; }
 
         [Required]
         [DisplayName("Status")]
-        public TopicStatus? Status { get; set; }
+        public TopicStatus Status { get; set; }
     }
 }

@@ -7,24 +7,23 @@ namespace CoMan.Controllers
 {
     public class TopicController : Controller
     {
-        private static readonly IList<TopicModel> _topics = new List<TopicModel>()
+        private readonly IRepository<TopicModel> _topicRepository;
+
+        public TopicController(IRepository<TopicModel> topicRepository)
         {
-            new TopicModel() { TopicId = 1, AddedDate = System.DateTime.Now, Title = "title1",
-                Description = "des1", StudentLimit = 1, Status = TopicStatus.Active },
-            new TopicModel() { TopicId = 2, AddedDate = System.DateTime.Now, Title = "title2",
-                Description = "des2", StudentLimit = 2, Status = TopicStatus.Active }
-        };
+            _topicRepository = topicRepository;
+        }
 
         // GET: Topic
         public ActionResult Index()
         {
-            return View(_topics);
+            return View(_topicRepository.List());
         }
 
         // GET: Topic/Details/5
         public ActionResult Details(int id)
         {
-            return View(_topics.FirstOrDefault(x => x.TopicId == id));
+            return View(_topicRepository.GetById(id));
         }
 
         // GET: Topic/Create
@@ -40,8 +39,8 @@ namespace CoMan.Controllers
         {
             try
             {
-                topicModel.TopicId = _topics.Count;
-                _topics.Add(topicModel);
+                topicModel.AddedDate = System.DateTime.Now;
+                _topicRepository.Insert(topicModel);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -53,7 +52,7 @@ namespace CoMan.Controllers
         // GET: Topic/Edit/5
         public ActionResult Edit(int id)
         {
-            return View(_topics.FirstOrDefault(x => x.TopicId == id));
+            return View(_topicRepository.GetById(id));
         }
 
         // POST: TopicController/Edit/5
@@ -63,12 +62,7 @@ namespace CoMan.Controllers
         {
             try
             {
-                TopicModel topic = _topics.FirstOrDefault(y => y.TopicId == id);
-                topic.Title = topicModel.Title;
-                topic.Description = topicModel.Description;
-                topic.Status = topicModel.Status;
-                topic.StudentLimit = topicModel.StudentLimit;
-
+                _topicRepository.Update(topicModel);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -80,7 +74,7 @@ namespace CoMan.Controllers
         // GET: Topic/Delete/5
         public ActionResult Delete(int id)
         {
-            return View(_topics.FirstOrDefault(x => x.TopicId == id));
+            return View(_topicRepository.GetById(id));
         }
 
         // POST: Topic/Delete/5
@@ -90,8 +84,7 @@ namespace CoMan.Controllers
         {
             try
             {
-                TopicModel topic = _topics.FirstOrDefault(x => x.TopicId == id);
-                _topics.Remove(topic);
+                _topicRepository.Delete(topicModel);
                 return RedirectToAction(nameof(Index));
             }
             catch
