@@ -1,5 +1,5 @@
 using CoMan.Data;
-using CoMan.Models;
+using CoMan.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,15 +7,17 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<CoManDbContext>(options =>
     options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
+    .AddEntityFrameworkStores<CoManDbContext>();
 builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<IRepository<TopicModel>, Repository<TopicModel>>();
-builder.Services.AddTransient<IRepository<CooperationRequestModel>, Repository<CooperationRequestModel>>();
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<ITopicService, TopicService>();
+builder.Services.AddTransient<ICooperationRequestService, CooperationRequestService>();
 
 var app = builder.Build();
 

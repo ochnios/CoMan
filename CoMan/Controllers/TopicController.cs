@@ -1,29 +1,28 @@
-﻿using System;
-using CoMan.Models;
-using Microsoft.AspNetCore.Http;
+﻿using CoMan.Models;
+using CoMan.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoMan.Controllers
 {
     public class TopicController : Controller
     {
-        private readonly IRepository<TopicModel> _topicRepository;
+        private readonly ITopicService _topicService;
 
-        public TopicController(IRepository<TopicModel> topicRepository)
+        public TopicController(ITopicService topicService)
         {
-            _topicRepository = topicRepository;
+            _topicService = topicService;
         }
 
         // GET: Topic
-        public ActionResult Index()
+        public async Task<ActionResult> IndexAsync()
         {
-            return View(_topicRepository.List());
+            return View(await _topicService.GetAllTopics());
         }
 
-        // GET: Topic/Details/5
-        public ActionResult Details(int id)
+        // GET: Topic/Details/{id}
+        public async Task<ActionResult> DetailsAsync(int id)
         {
-            return View(_topicRepository.GetById(id));
+            return View(await _topicService.GetTopicById(id));
         }
 
         // GET: Topic/Create
@@ -35,12 +34,11 @@ namespace CoMan.Controllers
         // POST: Topic/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(TopicModel topicModel)
+        public async Task<ActionResult> CreateAsync(TopicModel topic)
         {
             try
             {
-                topicModel.AddedDate = System.DateTime.Now;
-                _topicRepository.Insert(topicModel);
+                await _topicService.CreateTopic(topic);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -49,20 +47,21 @@ namespace CoMan.Controllers
             }
         }
 
-        // GET: Topic/Edit/5
-        public ActionResult Edit(int id)
+        // GET: Topic/Edit/{id}
+        public async Task<ActionResult> EditAsync(int id)
         {
-            return View(_topicRepository.GetById(id));
+            return View(await _topicService.GetTopicById(id));
         }
 
-        // POST: TopicController/Edit/5
+        // POST: TopicController/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, TopicModel topicModel)
+        public async Task<ActionResult> EditAsync(int id, TopicModel topic)
         {
             try
             {
-                _topicRepository.Update(topicModel);
+                TopicModel topicToBeUpdated = await _topicService.GetTopicById(id);
+                await _topicService.UpdateTopic(topicToBeUpdated, topic);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -71,20 +70,20 @@ namespace CoMan.Controllers
             }
         }
 
-        // GET: Topic/Delete/5
-        public ActionResult Delete(int id)
+        // GET: Topic/Delete/{id}
+        public async Task<ActionResult> DeleteAsync(int id)
         {
-            return View(_topicRepository.GetById(id));
+            return View(await _topicService.GetTopicById(id));
         }
 
-        // POST: Topic/Delete/5
+        // POST: Topic/Delete/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, TopicModel topicModel)
+        public async Task<ActionResult> DeleteAsync(int id, TopicModel topic)
         {
             try
             {
-                _topicRepository.Delete(topicModel);
+                await _topicService.DeleteTopic(topic);
                 return RedirectToAction(nameof(Index));
             }
             catch

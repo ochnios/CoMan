@@ -1,47 +1,55 @@
-﻿using CoMan.Data;
+﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 
-public class Repository<T> : IRepository<T> where T : EntityBase
+namespace CoMan.Repositories
 {
-    private readonly ApplicationDbContext _dbContext;
-
-    public Repository(ApplicationDbContext dbContext)
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        _dbContext = dbContext;
-    }
+        protected readonly DbContext Context;
 
-    public virtual T GetById(int id)
-    {
-        return _dbContext.Set<T>().Find(id);
-    }
+        public Repository(DbContext context)
+        {
+            this.Context = context;
+        }
 
-    public virtual IEnumerable<T> List()
-    {
-        return _dbContext.Set<T>().AsEnumerable();
-    }
+        public ValueTask<TEntity> GetByIdAsync(int id)
+        {
+            return Context.Set<TEntity>().FindAsync(id);
+        }
 
-    public virtual IEnumerable<T> List(System.Linq.Expressions.Expression<Func<T, bool>> predicate)
-    {
-        return _dbContext.Set<T>()
-               .Where(predicate)
-               .AsEnumerable();
-    }
+        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        {
+            return await Context.Set<TEntity>().ToListAsync();
+        }
+        public IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate)
+        {
+            return Context.Set<TEntity>().Where(predicate);
+        }
 
-    public void Insert(T entity)
-    {
-        _dbContext.Set<T>().Add(entity);
-        _dbContext.SaveChanges();
-    }
+        public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return Context.Set<TEntity>().SingleOrDefaultAsync(predicate);
+        }
 
-    public void Update(T entity)
-    {
-        _dbContext.Entry(entity).State = EntityState.Modified;
-        _dbContext.SaveChanges();
-    }
+        public async Task AddAsync(TEntity entity)
+        {
+            await Context.Set<TEntity>().AddAsync(entity);
+        }
 
-    public void Delete(T entity)
-    {
-        _dbContext.Set<T>().Remove(entity);
-        _dbContext.SaveChanges();
+        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+        {
+            await Context.Set<TEntity>().AddRangeAsync(entities);
+        }
+
+
+        public void Remove(TEntity entity)
+        {
+            Context.Set<TEntity>().Remove(entity);
+        }
+
+        public void RemoveRange(IEnumerable<TEntity> entities)
+        {
+            Context.Set<TEntity>().RemoveRange(entities);
+        }
     }
 }

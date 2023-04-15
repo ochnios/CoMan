@@ -1,29 +1,28 @@
 ﻿using CoMan.Models;
-using Microsoft.AspNetCore.Http;
+using CoMan.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoMan.Controllers
 {
     public class CooperationRequestController : Controller
     {
-        private readonly IRepository<CooperationRequestModel> _cooperationRequestRepository;
-        private readonly IRepository<TopicModel> _topicRepository;
+        private readonly ICooperationRequestService _cooperationRequestService;
 
-        public CooperationRequestController(IRepository<CooperationRequestModel> cooperationRequestRepository)
+        public CooperationRequestController(ICooperationRequestService cooperationRequestService)
         {
-            _cooperationRequestRepository = cooperationRequestRepository;
+            _cooperationRequestService = cooperationRequestService;
         }
 
         // GET: CooperationRequest
-        public ActionResult Index()
+        public async Task<ActionResult> IndexAsync()
         {
-            return View(_cooperationRequestRepository.List());
+            return View(await _cooperationRequestService.GetAllCooperationRequests());
         }
 
         // GET: CooperationRequest/Details/5
-        public ActionResult Details(int id)
+        public async Task<ActionResult> DetailsAsync(int id)
         {
-            return View(_cooperationRequestRepository.GetById(id));
+            return View(await _cooperationRequestService.GetCooperationRequestById(id));
         }
 
         // GET: CooperationRequest/Create
@@ -35,14 +34,11 @@ namespace CoMan.Controllers
         // POST: CooperationRequest/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CooperationRequestModel cooperationRequestModel)
+        public async Task<ActionResult> CreateAsync(CooperationRequestModel cooperationRequest)
         {
             try
             {
-                cooperationRequestModel.CreationDate = System.DateTime.Now;
-                cooperationRequestModel.Status = CooperationRequestStatus.Waiting;
-                //cooperationRequestModel.Topic = 
-                _cooperationRequestRepository.Insert(cooperationRequestModel);
+                await _cooperationRequestService.CreateCooperationRequest(cooperationRequest);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -52,18 +48,20 @@ namespace CoMan.Controllers
         }
 
         // GET: CooperationRequest/Edit/5
-        public ActionResult Edit(int id)
+        public async Task<ActionResult> EditAsync(int id)
         {
-            return View(_cooperationRequestRepository.GetById(id));
+            return View(await _cooperationRequestService.GetCooperationRequestById(id));
         }
 
         // POST: CooperationRequest/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public async Task<ActionResult> EditAsync(int id, CooperationRequestModel cooperationRequest)
         {
             try
             {
+                CooperationRequestModel cooperationRequestToBeUpdated = await _cooperationRequestService.GetCooperationRequestById(id);
+                await _cooperationRequestService.UpdateCooperationRequest(cooperationRequestToBeUpdated, cooperationRequest);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -73,18 +71,19 @@ namespace CoMan.Controllers
         }
 
         // GET: CooperationRequest/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<ActionResult> DeleteAsync(int id)
         {
-            return View();
+            return View(await _cooperationRequestService.GetCooperationRequestById(id));
         }
 
         // POST: CooperationRequest/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<ActionResult> DeleteAsync(int id, CooperationRequestModel cooperationRequest)
         {
             try
             {
+                await _cooperationRequestService.DeleteCooperationRequest(cooperationRequest);
                 return RedirectToAction(nameof(Index));
             }
             catch

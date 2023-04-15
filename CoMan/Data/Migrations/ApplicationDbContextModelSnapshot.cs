@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoMan.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(CoManDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -37,7 +37,7 @@ namespace CoMan.Data.Migrations
                     b.Property<string>("ApplicantComment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("CoinsiderationDate")
+                    b.Property<DateTime?>("ConsiderationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreationDate")

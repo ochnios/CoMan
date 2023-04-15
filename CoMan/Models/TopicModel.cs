@@ -12,7 +12,7 @@ namespace CoMan.Models
     }
 
     [Table("Topics")]
-    public class TopicModel : EntityBase
+    public class TopicModel
     {
         [Key]
         public int Id { get; set; }

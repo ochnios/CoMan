@@ -5,10 +5,27 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace CoMan.Data.Migrations
 {
-    public partial class AddCooperationRequests : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Topics",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AddedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StudentLimit = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Topics", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "CooperationRequests",
                 columns: table => new
@@ -16,7 +33,7 @@ namespace CoMan.Data.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CoinsiderationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ConsiderationDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Applicant = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Recipent = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TopicId = table.Column<int>(type: "int", nullable: false),
@@ -45,6 +62,9 @@ namespace CoMan.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "CooperationRequests");
+
+            migrationBuilder.DropTable(
+                name: "Topics");
         }
     }
 }

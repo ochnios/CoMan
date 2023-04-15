@@ -1,16 +1,16 @@
 ﻿using System.Linq.Expressions;
 
-public interface IRepository<T> where T : EntityBase
+namespace CoMan.Repositories
 {
-    T GetById(int id);
-    IEnumerable<T> List();
-    IEnumerable<T> List(Expression<Func<T, bool>> predicate);
-    void Insert(T entity);
-    void Update(T entity);
-    void Delete(T entity);  
-}
-
-public abstract class EntityBase
-{
-    public int Id { get; protected set; }
+    public interface IRepository<TEntity> where TEntity : class
+    {
+        ValueTask<TEntity> GetByIdAsync(int id);
+        Task<IEnumerable<TEntity>> GetAllAsync();
+        IEnumerable<TEntity> Find(Expression<Func<TEntity, bool>> predicate);
+        Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
+        Task AddAsync(TEntity entity);
+        Task AddRangeAsync(IEnumerable<TEntity> entities);
+        void Remove(TEntity entity);
+        void RemoveRange(IEnumerable<TEntity> entities);
+    }
 }

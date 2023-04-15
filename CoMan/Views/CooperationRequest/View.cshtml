@@ -1,13 +1,14 @@
 ﻿@model CoMan.Models.CooperationRequestModel
 
 @{
-    ViewData["Title"] = "Cooperation request details";
+    ViewData["Title"] = "View";
 }
 
-<h1>Details</h1>
+<h1>View</h1>
 
+<h3>Are you sure you want to delete this?</h3>
 <div>
-    <h4>Cooperation request details</h4>
+    <h4>CooperationRequestModel</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
@@ -15,12 +16,6 @@
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.CreationDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ConsiderationDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ConsiderationDate)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Applicant)
@@ -35,26 +30,16 @@
             @Html.DisplayFor(model => model.Recipent)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ApplicantComment)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ApplicantComment)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.RecipentComment)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.RecipentComment)
-        </dd>
-        <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Status)
         </dt>
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.Status)
         </dd>
     </dl>
-</div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    <a asp-action="Index">Back to List</a>
+    
+    <form asp-action="View">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
 </div>

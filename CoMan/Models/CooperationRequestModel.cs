@@ -12,7 +12,7 @@ namespace CoMan.Models
     }
 
     [Table("CooperationRequests")]
-    public class CooperationRequestModel : EntityBase
+    public class CooperationRequestModel
     {
         [Key]
         public int Id { get; set; }
@@ -22,7 +22,7 @@ namespace CoMan.Models
         public DateTime CreationDate { get; set; }
 
         [DisplayName("Consideration date")]
-        public DateTime? CoinsiderationDate { get; set; }
+        public DateTime? ConsiderationDate { get; set; }
 
         [Required]
         [DisplayName("Applicant")]
