@@ -7,6 +7,7 @@ namespace CoMan.Controllers
     public class CooperationRequestController : Controller
     {
         private readonly IRepository<CooperationRequestModel> _cooperationRequestRepository;
+        private readonly IRepository<TopicModel> _topicRepository;
 
         public CooperationRequestController(IRepository<CooperationRequestModel> cooperationRequestRepository)
         {
@@ -22,22 +23,26 @@ namespace CoMan.Controllers
         // GET: CooperationRequest/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return View(_cooperationRequestRepository.GetById(id));
         }
 
         // GET: CooperationRequest/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new CooperationRequestModel());
         }
 
         // POST: CooperationRequest/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(CooperationRequestModel cooperationRequestModel)
         {
             try
             {
+                cooperationRequestModel.CreationDate = System.DateTime.Now;
+                cooperationRequestModel.Status = CooperationRequestStatus.Waiting;
+                //cooperationRequestModel.Topic = 
+                _cooperationRequestRepository.Insert(cooperationRequestModel);
                 return RedirectToAction(nameof(Index));
             }
             catch
@@ -49,7 +54,7 @@ namespace CoMan.Controllers
         // GET: CooperationRequest/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View(_cooperationRequestRepository.GetById(id));
         }
 
         // POST: CooperationRequest/Edit/5

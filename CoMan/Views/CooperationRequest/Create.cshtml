@@ -1,0 +1,63 @@
+﻿@model CoMan.Models.CooperationRequestModel
+
+@{
+    ViewData["Title"] = "Create cooperation request";
+}
+
+<h1>Create</h1>
+
+<h4>Create cooperation request</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="CreationDate" class="control-label"></label>
+                <input asp-for="CreationDate" class="form-control" />
+                <span asp-validation-for="CreationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="CoinsiderationDate" class="control-label"></label>
+                <input asp-for="CoinsiderationDate" class="form-control" />
+                <span asp-validation-for="CoinsiderationDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Applicant" class="control-label"></label>
+                <input asp-for="Applicant" class="form-control" />
+                <span asp-validation-for="Applicant" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Recipent" class="control-label"></label>
+                <input asp-for="Recipent" class="form-control" />
+                <span asp-validation-for="Recipent" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="ApplicantComment" class="control-label"></label>
+                <input asp-for="ApplicantComment" class="form-control" />
+                <span asp-validation-for="ApplicantComment" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="RecipentComment" class="control-label"></label>
+                <input asp-for="RecipentComment" class="form-control" />
+                <span asp-validation-for="RecipentComment" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Status" class="control-label"></label>
+                <select asp-for="Status" class="form-control"></select>
+                <span asp-validation-for="Status" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
