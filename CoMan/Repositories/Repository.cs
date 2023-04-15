@@ -1,13 +1,14 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using CoMan.Data;
 
 namespace CoMan.Repositories
 {
     public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
     {
-        protected readonly DbContext Context;
+        protected readonly CoManDbContext Context = null!;
 
-        public Repository(DbContext context)
+        public Repository(CoManDbContext context)
         {
             this.Context = context;
         }

@@ -4,9 +4,9 @@ namespace CoMan.Data
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly CoManDbContext _context;
-        private TopicRepository _topicRepository;
-        private CooperationRequestRepository _cooperationRequestRepository;
+        private readonly CoManDbContext _context = null!;
+        private TopicRepository _topicRepository = null!;
+        private CooperationRequestRepository _cooperationRequestRepository = null!;
 
         public UnitOfWork(CoManDbContext context)
         {

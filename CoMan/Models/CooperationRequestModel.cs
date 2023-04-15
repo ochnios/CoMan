@@ -21,22 +21,12 @@ namespace CoMan.Models
         [DisplayName("Creation date")]
         public DateTime CreationDate { get; set; }
 
+        [Required]
+        [DisplayName("Status")]
+        public CooperationRequestStatus Status { get; set; }
+
         [DisplayName("Consideration date")]
         public DateTime? ConsiderationDate { get; set; }
-
-        [Required]
-        [DisplayName("Applicant")]
-        // temporary string, should be a user - student
-        public string Applicant { get; set; } = null!;
-
-        [Required]
-        [DisplayName("Recipent")]
-        // temporary string, should be a user - teacher
-        public string Recipent { get; set; } = null!;
-
-        [Required]
-        [DisplayName("Topic")]
-        public TopicModel Topic { get; set; } = null!;
 
         [DisplayName("Applicant comment")]
         public string? ApplicantComment { get; set; }
@@ -44,8 +34,21 @@ namespace CoMan.Models
         [DisplayName("Recipent comment")]
         public string? RecipentComment { get; set; }
 
-        [Required]
-        [DisplayName("Status")]
-        public CooperationRequestStatus Status { get; set; }
+        [DisplayName("Topic")]
+        public TopicModel Topic { get; set; } = null!;
+
+        [DisplayName("Applicant")]
+        // temporary string, should be a user - student
+        public string Applicant { get; set; } = null!;
+
+        [DisplayName("Recipent")]
+        // temporary string, should be a user - teacher
+        public string Recipent { get; set; } = null!;
+
+
+        [ForeignKey("Cooperation")]
+        public int? CooperationId { get; set; }
+        [DisplayName("Cooperation")]
+        public CooperationModel? Cooperation { get; set; }
     }
 }
