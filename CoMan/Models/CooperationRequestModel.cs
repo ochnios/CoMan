@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using CoMan.Data;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -28,26 +29,22 @@ namespace CoMan.Models
         [DisplayName("Consideration date")]
         public DateTime? ConsiderationDate { get; set; }
 
-        [DisplayName("Applicant comment")]
+        [DisplayName("Student comment")]
         public string? ApplicantComment { get; set; }
 
-        [DisplayName("Recipent comment")]
+        [DisplayName("Teacher comment")]
         public string? RecipentComment { get; set; }
 
         [DisplayName("Topic")]
         public TopicModel Topic { get; set; } = null!;
 
-        [DisplayName("Applicant")]
-        // temporary string, should be a user - student
-        public string Applicant { get; set; } = null!;
+        [ForeignKey("StudentId")]
+        [DisplayName("Student")]
+        public StudentUser? Student { get; set; }
 
-        [DisplayName("Recipent")]
-        // temporary string, should be a user - teacher
-        public string Recipent { get; set; } = null!;
+        [DisplayName("Teacher")]
+        public TeacherUser? Teacher { get; set; }
 
-
-        [ForeignKey("Cooperation")]
-        public int? CooperationId { get; set; }
         [DisplayName("Cooperation")]
         public CooperationModel? Cooperation { get; set; }
     }

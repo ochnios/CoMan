@@ -34,6 +34,10 @@ namespace CoMan.Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -95,6 +99,8 @@ namespace CoMan.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("ApplicationUser");
                 });
 
             modelBuilder.Entity("CoMan.Models.CooperationModel", b =>
@@ -111,6 +117,9 @@ namespace CoMan.Data.Migrations
                     b.Property<DateTime?>("ConsiderationDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("CooperationRequestId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
@@ -120,18 +129,26 @@ namespace CoMan.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<string>("Student")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Teacher")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<string>("TeacherId")
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("TopicId")
+                    b.Property<int?>("TopicId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CooperationRequestId")
+                        .IsUnique()
+                        .HasFilter("[CooperationRequestId] IS NOT NULL");
+
+                    b.HasIndex("StudentId")
+                        .IsUnique()
+                        .HasFilter("[StudentId] IS NOT NULL");
+
+                    b.HasIndex("TeacherId");
 
                     b.HasIndex("TopicId");
 
@@ -146,25 +163,14 @@ namespace CoMan.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Applicant")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("ApplicantComment")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ConsiderationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("CooperationId")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Recipent")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RecipentComment")
                         .HasColumnType("nvarchar(max)");
@@ -172,14 +178,22 @@ namespace CoMan.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("StudentId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TeacherId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<int>("TopicId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CooperationId")
+                    b.HasIndex("StudentId")
                         .IsUnique()
-                        .HasFilter("[CooperationId] IS NOT NULL");
+                        .HasFilter("[StudentId] IS NOT NULL");
+
+                    b.HasIndex("TeacherId");
 
                     b.HasIndex("TopicId");
 
@@ -197,9 +211,9 @@ namespace CoMan.Data.Migrations
                     b.Property<DateTime>("AddedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Author")
+                    b.Property<string>("AuthorId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -215,6 +229,8 @@ namespace CoMan.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AuthorId");
 
                     b.ToTable("Topics");
                 });
@@ -356,32 +372,82 @@ namespace CoMan.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CoMan.Data.StudentUser", b =>
+                {
+                    b.HasBaseType("CoMan.Data.ApplicationUser");
+
+                    b.HasDiscriminator().HasValue("StudentUser");
+                });
+
+            modelBuilder.Entity("CoMan.Data.TeacherUser", b =>
+                {
+                    b.HasBaseType("CoMan.Data.ApplicationUser");
+
+                    b.Property<int>("MaxCooperations")
+                        .HasColumnType("int");
+
+                    b.HasDiscriminator().HasValue("TeacherUser");
+                });
+
             modelBuilder.Entity("CoMan.Models.CooperationModel", b =>
                 {
+                    b.HasOne("CoMan.Models.CooperationRequestModel", "CooperationRequest")
+                        .WithOne("Cooperation")
+                        .HasForeignKey("CoMan.Models.CooperationModel", "CooperationRequestId");
+
+                    b.HasOne("CoMan.Data.StudentUser", "Student")
+                        .WithOne("Cooperation")
+                        .HasForeignKey("CoMan.Models.CooperationModel", "StudentId");
+
+                    b.HasOne("CoMan.Data.TeacherUser", "Teacher")
+                        .WithMany("Cooperations")
+                        .HasForeignKey("TeacherId");
+
                     b.HasOne("CoMan.Models.TopicModel", "Topic")
-                        .WithMany()
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .WithMany("Cooperations")
+                        .HasForeignKey("TopicId");
+
+                    b.Navigation("CooperationRequest");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("Teacher");
 
                     b.Navigation("Topic");
                 });
 
             modelBuilder.Entity("CoMan.Models.CooperationRequestModel", b =>
                 {
-                    b.HasOne("CoMan.Models.CooperationModel", "Cooperation")
+                    b.HasOne("CoMan.Data.StudentUser", "Student")
                         .WithOne("CooperationRequest")
-                        .HasForeignKey("CoMan.Models.CooperationRequestModel", "CooperationId");
+                        .HasForeignKey("CoMan.Models.CooperationRequestModel", "StudentId");
+
+                    b.HasOne("CoMan.Data.TeacherUser", "Teacher")
+                        .WithMany("CooperationsRequests")
+                        .HasForeignKey("TeacherId");
 
                     b.HasOne("CoMan.Models.TopicModel", "Topic")
-                        .WithMany()
+                        .WithMany("CooperationRequests")
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Cooperation");
+                    b.Navigation("Student");
+
+                    b.Navigation("Teacher");
 
                     b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("CoMan.Models.TopicModel", b =>
+                {
+                    b.HasOne("CoMan.Data.TeacherUser", "Author")
+                        .WithMany("Topics")
+                        .HasForeignKey("AuthorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Author");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -435,10 +501,32 @@ namespace CoMan.Data.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("CoMan.Models.CooperationModel", b =>
+            modelBuilder.Entity("CoMan.Models.CooperationRequestModel", b =>
                 {
-                    b.Navigation("CooperationRequest")
-                        .IsRequired();
+                    b.Navigation("Cooperation");
+                });
+
+            modelBuilder.Entity("CoMan.Models.TopicModel", b =>
+                {
+                    b.Navigation("CooperationRequests");
+
+                    b.Navigation("Cooperations");
+                });
+
+            modelBuilder.Entity("CoMan.Data.StudentUser", b =>
+                {
+                    b.Navigation("Cooperation");
+
+                    b.Navigation("CooperationRequest");
+                });
+
+            modelBuilder.Entity("CoMan.Data.TeacherUser", b =>
+                {
+                    b.Navigation("Cooperations");
+
+                    b.Navigation("CooperationsRequests");
+
+                    b.Navigation("Topics");
                 });
 #pragma warning restore 612, 618
         }

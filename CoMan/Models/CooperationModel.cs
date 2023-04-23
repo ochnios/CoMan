@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using CoMan.Data;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -34,17 +35,17 @@ namespace CoMan.Models
         public float? Mark { get; set; }
 
         [DisplayName("Topic")]
-        public TopicModel Topic { get; set; } = null!;
+        public TopicModel? Topic { get; set; }
 
+        [ForeignKey("CooperationRequestId")]
         [DisplayName("Cooperation Request")]
-        public CooperationRequestModel CooperationRequest { get; set; } = null!;
+        public CooperationRequestModel? CooperationRequest { get; set; }
 
+        [ForeignKey("StudentId")]
         [DisplayName("Student")]
-        // temporary string, should be a user - student
-        public string Student { get; set; } = null!;
+        public StudentUser? Student { get; set; }
 
         [DisplayName("Teacher")]
-        // temporary string, should be a user - teacher
-        public string Teacher { get; set; } = null!;
+        public TeacherUser? Teacher { get; set; }
     }
 }

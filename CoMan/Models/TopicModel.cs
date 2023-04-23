@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using CoMan.Data;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -36,8 +37,12 @@ namespace CoMan.Models
         [DisplayName("Description")]
         public string? Description { get; set; }
 
+        [Required]
         [DisplayName("Author")]
-        // temporary string, should be a user - teacher or student
-        public string Author { get; set; } = null!;
+        public TeacherUser Author { get; set; } = null!;
+
+        public ICollection<CooperationRequestModel>? CooperationRequests { get; set; }
+
+        public ICollection<CooperationModel>? Cooperations { get; set; }
     }
 }
