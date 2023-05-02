@@ -130,7 +130,7 @@ namespace CoMan.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = CreateUser();
+                var user = CreateUser(Input.Role);
 
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
@@ -177,11 +177,18 @@ namespace CoMan.Areas.Identity.Pages.Account
             return Page();
         }
 
-        private ApplicationUser CreateUser()
+        private ApplicationUser CreateUser(string role)
         {
             try
             {
-                return Activator.CreateInstance<ApplicationUser>();
+                if (role == "Teacher")
+                {
+                    return Activator.CreateInstance<TeacherUser>();
+                }
+                else
+                {
+                    return Activator.CreateInstance<StudentUser>();
+                }
             }
             catch
             {

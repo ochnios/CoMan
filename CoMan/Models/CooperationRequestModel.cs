@@ -36,16 +36,16 @@ namespace CoMan.Models
         public string? RecipentComment { get; set; }
 
         [DisplayName("Topic")]
-        public TopicModel Topic { get; set; } = null!;
+        public virtual TopicModel Topic { get; set; } = null!;
 
         [ForeignKey("StudentId")]
         [DisplayName("Student")]
-        public StudentUser? Student { get; set; }
+        public virtual StudentUser? Student { get; set; }
 
         [DisplayName("Teacher")]
-        public TeacherUser? Teacher { get; set; }
+        public virtual TeacherUser? Teacher { get; set; }
 
         [DisplayName("Cooperation")]
-        public CooperationModel? Cooperation { get; set; }
+        public virtual CooperationModel? Cooperation { get; set; }
     }
 }

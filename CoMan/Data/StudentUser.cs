@@ -4,8 +4,8 @@ namespace CoMan.Data
 {
     public class StudentUser : ApplicationUser
     {
-        public CooperationRequestModel? CooperationRequest { get; set; }
+        public virtual CooperationRequestModel? CooperationRequest { get; set; }
 
-        public CooperationModel? Cooperation { get; set; }
+        public virtual CooperationModel? Cooperation { get; set; }
     }
 }

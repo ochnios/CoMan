@@ -5,6 +5,7 @@ namespace CoMan.Data
     public class UnitOfWork : IUnitOfWork
     {
         private readonly CoManDbContext _context = null!;
+        private TeacherRepository _teacherRepository = null!;
         private TopicRepository _topicRepository = null!;
         private CooperationRequestRepository _cooperationRequestRepository = null!;
 
@@ -12,6 +13,9 @@ namespace CoMan.Data
         {
             this._context = context;
         }
+
+        public ITeacherRepository Teachers =>
+            _teacherRepository = _teacherRepository ?? new TeacherRepository(_context);
 
         public ITopicRepository Topics =>
             _topicRepository = _topicRepository ?? new TopicRepository(_context);

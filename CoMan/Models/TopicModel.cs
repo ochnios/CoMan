@@ -39,10 +39,10 @@ namespace CoMan.Models
 
         [Required]
         [DisplayName("Author")]
-        public TeacherUser Author { get; set; } = null!;
+        public virtual TeacherUser Author { get; set; } = null!;
 
-        public ICollection<CooperationRequestModel>? CooperationRequests { get; set; }
+        public virtual ICollection<CooperationRequestModel>? CooperationRequests { get; set; }
 
-        public ICollection<CooperationModel>? Cooperations { get; set; }
+        public virtual ICollection<CooperationModel>? Cooperations { get; set; }
     }
 }

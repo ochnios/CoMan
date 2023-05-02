@@ -35,17 +35,17 @@ namespace CoMan.Models
         public float? Mark { get; set; }
 
         [DisplayName("Topic")]
-        public TopicModel? Topic { get; set; }
+        public virtual TopicModel? Topic { get; set; }
 
         [ForeignKey("CooperationRequestId")]
         [DisplayName("Cooperation Request")]
-        public CooperationRequestModel? CooperationRequest { get; set; }
+        public virtual CooperationRequestModel? CooperationRequest { get; set; }
 
         [ForeignKey("StudentId")]
         [DisplayName("Student")]
-        public StudentUser? Student { get; set; }
+        public virtual StudentUser? Student { get; set; }
 
         [DisplayName("Teacher")]
-        public TeacherUser? Teacher { get; set; }
+        public virtual TeacherUser? Teacher { get; set; }
     }
 }

@@ -18,6 +18,11 @@ namespace CoMan.Repositories
             return Context.Set<TEntity>().FindAsync(id);
         }
 
+        public ValueTask<TEntity> GetByIdAsync(string id)
+        {
+            return Context.Set<TEntity>().FindAsync(id);
+        }
+
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
             return await Context.Set<TEntity>().ToListAsync();
