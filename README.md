@@ -1,4 +1,4 @@
-# CoMan# CoMan
+# CoMan
 Cooperation Manager is simple CRM to manage individual cooperation with teachers. This is my answer to the course "Individual project" in the 2nd year of CS studies. The main goal of the project is to learn how to create web applications using ASP.NET Core MVC, Razor, Entity Framework and Bootstrap.
 
 ## What will the system enable? Main functionalities

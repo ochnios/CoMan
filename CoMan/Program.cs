@@ -1,18 +1,56 @@
 using CoMan.Data;
+using CoMan.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Newtonsoft.Json.Converters;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.ConfigureLogging(logging =>
+{
+    logging.ClearProviders();
+    logging.AddConsole();
+});
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<CoManDbContext>(options =>
+    options.UseSqlServer(connectionString).UseLazyLoadingProxies());
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddControllersWithViews();
+builder.Services.AddIdentityCore<ApplicationUser>();
+builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
+    .AddEntityFrameworkStores<CoManDbContext>();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireStudent", policy => policy.RequireRole("Student"));
+    options.AddPolicy("RequireTeacher", policy => policy.RequireRole("Teacher"));
+    options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+});
+
+builder.Services.AddControllersWithViews()
+    .AddNewtonsoftJson(options =>
+    {
+        options.SerializerSettings.Converters.Add(new StringEnumConverter());
+    });
+
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<ITopicService, TopicService>();
+builder.Services.AddTransient<ICooperationRequestService, CooperationRequestService>();
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+// Register the Swagger generator, defining 1 or more Swagger documents
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoMan", Version = "v1" });
+    c.ResolveConflictingActions(apiDescriptions => apiDescriptions.FirstOrDefault());
+
+    //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    //c.IncludeXmlComments(xmlPath);
+});
 
 var app = builder.Build();
 
@@ -31,6 +69,14 @@ else
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Enable middleware to serve generated Swagger as a JSON endpoint.
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.RoutePrefix = "docs";
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "CoMan Docs v1");
+});
+
 app.UseRouting();
 
 app.UseAuthentication();
@@ -39,6 +85,27 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "topics",
+    pattern: "{controller=Topic}/{action=Index}/{id?}");
+app.MapControllerRoute(
+    name: "cooperationRequests",
+    pattern: "{controller=CooperationRequest}/{action=Index}/{id?}");
+
 app.MapRazorPages();
+
+using (var scope = app.Services.CreateScope())
+{
+    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var roles = Role.GetNames(typeof(Role));
+
+    foreach (string role in roles)
+    {
+        if (!await roleManager.RoleExistsAsync(role))
+        {
+            await roleManager.CreateAsync(new IdentityRole(role));
+        }
+    }
+}
 
 app.Run();
