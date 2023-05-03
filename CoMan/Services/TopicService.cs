@@ -4,6 +4,7 @@ using CoMan.Models;
 using CoMan.Data;
 using Microsoft.AspNetCore.Identity;
 using NuGet.Protocol;
+using System.Linq.Expressions;
 
 namespace CoMan.Services
 {
@@ -29,6 +30,14 @@ namespace CoMan.Services
         {
             return await _unitOfWork.Topics
                 .GetAllAsync();
+        }
+
+        public async Task<IEnumerable<TopicModel>> FindForDatables(string searchBy)
+        {
+            var result = await _unitOfWork.Topics
+                .Find(r => r.Title != null);
+
+            return result;
         }
 
         public async Task<TopicModel> CreateTopic(TopicModel newTopic)
