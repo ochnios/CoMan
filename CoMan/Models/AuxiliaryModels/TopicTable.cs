@@ -6,9 +6,9 @@ namespace CoMan.Models.AuxiliaryModels
     {
         public int Id { get; set; }
 
-        public DateTime AddedDate { get; set; }
+        public string AddedDate { get; set; } = null!;
 
-        public TopicStatus Status { get; set; }
+        public string Status { get; set; } = null!;
 
         public string Title { get; set; } = null!;
 

@@ -54,8 +54,8 @@ namespace CoMan.Controllers
                 result.Add(new TopicTable()
                 {
                     Id = item.Id,
-                    AddedDate = item.AddedDate,
-                    Status = item.Status,
+                    AddedDate = item.AddedDate.ToString("dd.MM.yyyy"),
+                    Status = item.Status.ToString(),
                     Title = item.Title,
                     StudentLimit = item.StudentLimit,
                     AuthorId = item.Author.Id,
