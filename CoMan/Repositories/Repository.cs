@@ -1,6 +1,8 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using CoMan.Data;
+using jQueryDatatableServerSideNetCore.Extensions;
+using System;
 
 namespace CoMan.Repositories
 {
@@ -28,9 +30,25 @@ namespace CoMan.Repositories
             return await Context.Set<TEntity>().ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate)
+        public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate,
+            int start, int length, string member, bool ascending)
         {
-            return await Context.Set<TEntity>().Where(predicate).ToListAsync();
+            return await Context.Set<TEntity>()
+                .Where(predicate)
+                .OrderByDynamic<TEntity>(member, ascending)
+                .Skip(start)
+                .Take(length)
+                .ToListAsync();
+        }
+
+        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await Context.Set<TEntity>().Where(predicate).CountAsync();
+        }
+
+        public async Task<int> CountAsync()
+        {
+            return await Context.Set<TEntity>().CountAsync();
         }
 
         public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)

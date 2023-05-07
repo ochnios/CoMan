@@ -5,6 +5,7 @@ using CoMan.Data;
 using Microsoft.AspNetCore.Identity;
 using NuGet.Protocol;
 using System.Linq.Expressions;
+using CoMan.Models.AuxiliaryModels;
 
 namespace CoMan.Services
 {
@@ -32,12 +33,36 @@ namespace CoMan.Services
                 .GetAllAsync();
         }
 
-        public async Task<IEnumerable<TopicModel>> FindForDatables(string searchBy)
+        public async Task<IEnumerable<TopicModel>> FindForDatables(DtParameters dtParameters)
         {
+            var searchBy = dtParameters.Search.Value;
+
+            // if we have an empty search then just order the results by Id ascending
+            var orderCriteria = "Id";
+            var orderAscendingDirection = true;
+
+            if (dtParameters.Order != null)
+            {
+                // sort on the 1st column
+                orderCriteria = dtParameters.Columns[dtParameters.Order[0].Column].Data;
+                orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
+            }
+
+            searchBy = searchBy.ToUpper();
             var result = await _unitOfWork.Topics
-                .Find(r => r.Title != null);
+                .Find((r => r.Title.ToUpper().Contains(searchBy) ||
+                           r.Description != null && r.Description.ToUpper().Contains(searchBy) ||
+                           r.Author.FirstName.ToUpper().Contains(searchBy) ||
+                           r.Author.LastName.ToUpper().Contains(searchBy)),
+                           dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
+                );
 
             return result;
+        }
+
+        public async Task<int> CountTopics()
+        {
+            return await _unitOfWork.Topics.CountAsync();
         }
 
         public async Task<TopicModel> CreateTopic(TopicModel newTopic)

@@ -1,7 +1,6 @@
 ﻿using CoMan.Data;
 using CoMan.Models;
 using CoMan.Models.AuxiliaryModels;
-using CoMan.Models.AuxiliaryModels.jQueryDatatableServerSideNetCore.Models.AuxiliaryModels;
 using CoMan.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -33,20 +32,7 @@ namespace CoMan.Controllers
         [HttpPost("LoadTable")]
         public async Task<IActionResult> LoadTable([FromBody] DtParameters dtParameters)
         {
-            var searchBy = dtParameters.Search?.Value;
-
-            // if we have an empty search then just order the results by Id ascending
-            var orderCriteria = "Id";
-            var orderAscendingDirection = true;
-
-            if (dtParameters.Order != null)
-            {
-                // sort on the 1st column
-                orderCriteria = dtParameters.Columns[dtParameters.Order[0].Column].Data;
-                orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
-            }
-
-            var data = await _topicService.FindForDatables(searchBy);
+            var data = await _topicService.FindForDatables(dtParameters);
 
             List<TopicTable> result = new List<TopicTable>();
             foreach (var item in data)
@@ -63,9 +49,8 @@ namespace CoMan.Controllers
                 }); ;
             }
 
-            // now just get the count of items (without the skip and take) - eg how many could be returned with filtering
             var filteredResultsCount = result.Count();
-            var totalResultsCount = 0;
+            var totalResultsCount = await _topicService.CountTopics();
 
             return Json(
             new DtResult<TopicTable>

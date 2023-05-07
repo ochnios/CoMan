@@ -7,7 +7,9 @@ namespace CoMan.Repositories
         ValueTask<TEntity> GetByIdAsync(int id);
         ValueTask<TEntity> GetByIdAsync(string id);
         Task<IEnumerable<TEntity>> GetAllAsync();
-        Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate);
+        Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate, int start, int length, string member, bool ascending);
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<int> CountAsync();
         Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
         Task AddAsync(TEntity entity);
         Task AddRangeAsync(IEnumerable<TEntity> entities);

@@ -1,4 +1,5 @@
 ﻿using CoMan.Models;
+using CoMan.Models.AuxiliaryModels;
 using System.Security.Cryptography;
 
 namespace CoMan.Services
@@ -7,7 +8,8 @@ namespace CoMan.Services
     {
         Task<TopicModel> GetTopicById(int id);
         Task<IEnumerable<TopicModel>> GetAllTopics();
-        Task<IEnumerable<TopicModel>> FindForDatables(string searchBy);
+        Task<IEnumerable<TopicModel>> FindForDatables(DtParameters dtParameters);
+        Task<int> CountTopics();
         Task<TopicModel> CreateTopic(TopicModel newTopic);
         Task UpdateTopic(TopicModel TopicToBeUpdated, TopicModel Topic);
         Task DeleteTopic(TopicModel Topic);
