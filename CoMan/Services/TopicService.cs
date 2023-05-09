@@ -33,9 +33,9 @@ namespace CoMan.Services
                 .GetAllAsync();
         }
 
-        public async Task<IEnumerable<TopicModel>> FindForDatables(DtParameters dtParameters)
+        public async Task<dynamic> FindForDatables(DtParameters dtParameters)
         {
-            var searchBy = dtParameters.Search.Value;
+            var searchBy = dtParameters.Search.Value.ToUpper();
 
             // if we have an empty search then just order the results by Id ascending
             var orderCriteria = "Id";
@@ -48,21 +48,35 @@ namespace CoMan.Services
                 orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
             }
 
-            searchBy = searchBy.ToUpper();
-            var result = await _unitOfWork.Topics
-                .Find((r => r.Title.ToUpper().Contains(searchBy) ||
+            var rawResults = await _unitOfWork.Topics
+                .FindForDatatables((r => r.Title.ToUpper().Contains(searchBy) ||
                            r.Description != null && r.Description.ToUpper().Contains(searchBy) ||
                            r.Author.FirstName.ToUpper().Contains(searchBy) ||
                            r.Author.LastName.ToUpper().Contains(searchBy)),
                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
                 );
 
-            return result;
-        }
+            List<TopicTable> resultsForDatatable = new List<TopicTable>();
+            foreach (var item in rawResults.Results)
+            {
+                resultsForDatatable.Add(new TopicTable()
+                {
+                    Id = item.Id,
+                    AddedDate = item.AddedDate.ToString("dd.MM.yyyy"),
+                    Status = item.Status.ToString(),
+                    Title = item.Title,
+                    StudentLimit = item.StudentLimit,
+                    AuthorId = item.Author.Id,
+                    AuthorName = item.Author.FirstName + " " + item.Author.LastName,
+                });
+            }
 
-        public async Task<int> CountTopics()
-        {
-            return await _unitOfWork.Topics.CountAsync();
+            return new
+            {
+                ResultsForTable = resultsForDatatable,
+                TotalCount = rawResults.TotalCount,
+                FilteredCount = rawResults.FilteredCount
+            };
         }
 
         public async Task<TopicModel> CreateTopic(TopicModel newTopic)

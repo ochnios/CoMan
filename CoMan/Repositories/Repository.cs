@@ -30,25 +30,23 @@ namespace CoMan.Repositories
             return await Context.Set<TEntity>().ToListAsync();
         }
 
-        public async Task<IEnumerable<TEntity>> Find(Expression<Func<TEntity, bool>> predicate,
+        public async Task<dynamic> FindForDatatables(Expression<Func<TEntity, bool>> predicate,
             int start, int length, string member, bool ascending)
         {
-            return await Context.Set<TEntity>()
-                .Where(predicate)
-                .OrderByDynamic<TEntity>(member, ascending)
-                .Skip(start)
-                .Take(length)
-                .ToListAsync();
-        }
 
-        public async Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate)
-        {
-            return await Context.Set<TEntity>().Where(predicate).CountAsync();
-        }
+            var totalCount = await Context.Set<TEntity>().CountAsync();
 
-        public async Task<int> CountAsync()
-        {
-            return await Context.Set<TEntity>().CountAsync();
+            var filtered = Context.Set<TEntity>().Where(predicate);
+            var filteredCount = await filtered.CountAsync();
+
+            var results = await filtered.OrderByDynamic<TEntity>(member, ascending).Skip(start).Take(length).ToListAsync();
+
+            return new
+            {
+                Results = results,
+                TotalCount = totalCount,
+                FilteredCount = filteredCount
+            };
         }
 
         public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)

@@ -34,32 +34,14 @@ namespace CoMan.Controllers
         {
             var data = await _topicService.FindForDatables(dtParameters);
 
-            List<TopicTable> result = new List<TopicTable>();
-            foreach (var item in data)
-            {
-                result.Add(new TopicTable()
-                {
-                    Id = item.Id,
-                    AddedDate = item.AddedDate.ToString("dd.MM.yyyy"),
-                    Status = item.Status.ToString(),
-                    Title = item.Title,
-                    StudentLimit = item.StudentLimit,
-                    AuthorId = item.Author.Id,
-                    AuthorName = item.Author.FirstName + " " + item.Author.LastName,
-                }); ;
-            }
-
-            var filteredResultsCount = result.Count();
-            var totalResultsCount = await _topicService.CountTopics();
-
             return Json(
-            new DtResult<TopicTable>
-            {
-                Draw = dtParameters.Draw,
-                RecordsTotal = totalResultsCount,
-                RecordsFiltered = filteredResultsCount,
-                Data = result
-            });
+                new DtResult<TopicTable>
+                {
+                    Draw = dtParameters.Draw,
+                    RecordsTotal = data.TotalCount,
+                    RecordsFiltered = data.FilteredCount,
+                    Data = data.ResultsForTable
+                });
         }
 
         // GET: Topic/Details/{id}

@@ -8,8 +8,7 @@ namespace CoMan.Services
     {
         Task<TopicModel> GetTopicById(int id);
         Task<IEnumerable<TopicModel>> GetAllTopics();
-        Task<IEnumerable<TopicModel>> FindForDatables(DtParameters dtParameters);
-        Task<int> CountTopics();
+        Task<dynamic> FindForDatables(DtParameters dtParameters);
         Task<TopicModel> CreateTopic(TopicModel newTopic);
         Task UpdateTopic(TopicModel TopicToBeUpdated, TopicModel Topic);
         Task DeleteTopic(TopicModel Topic);
