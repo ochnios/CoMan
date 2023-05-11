@@ -1,9 +1,11 @@
 ﻿using CoMan.Models;
 using CoMan.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CoMan.Controllers
 {
+    [Authorize]
     public class CooperationRequestController : Controller
     {
         private readonly ICooperationRequestService _cooperationRequestService;
@@ -25,6 +27,7 @@ namespace CoMan.Controllers
             return View(await _cooperationRequestService.GetCooperationRequestById(id));
         }
 
+        [Authorize(Policy = "RequireStudent")]
         // GET: CooperationRequest/Create
         public ActionResult Create()
         {
@@ -32,6 +35,7 @@ namespace CoMan.Controllers
         }
 
         // POST: CooperationRequest/Create
+        [Authorize(Policy = "RequireStudent")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> CreateAsync(CooperationRequestModel cooperationRequest)

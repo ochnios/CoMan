@@ -53,5 +53,10 @@
         @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
         <text> | </text>
     }
+    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireStudent")).Succeeded)
+    {
+        @Html.ActionLink("Apply","Create", "CooperationRequest", new { topicId = Model.Id }, null)
+        <text> | </text>
+    }
     <a asp-action="Index">Back to List</a>
 </div>
