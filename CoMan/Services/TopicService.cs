@@ -81,7 +81,7 @@ namespace CoMan.Services
 
         public async Task<TopicModel> CreateTopic(TopicModel newTopic)
         {
-            var author = await GetCurrentUser();
+            var author = await GetCurrentTeacherUser();
 
             newTopic.AddedDate = System.DateTime.Now;
             newTopic.Status = TopicStatus.Active;
@@ -110,7 +110,7 @@ namespace CoMan.Services
             _unitOfWork.Topics.Remove(Topic);
             await _unitOfWork.CommitAsync();
         }
-        private async Task<TeacherUser> GetCurrentUser()
+        private async Task<TeacherUser> GetCurrentTeacherUser()
         {
             TeacherService teacherService = new TeacherService(_unitOfWork, _userManager);
             var httpContext = new HttpContextAccessor().HttpContext;

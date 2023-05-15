@@ -25,9 +25,10 @@ namespace CoMan.Services
                 .GetAllAsync();
         }
 
-        public async Task<CooperationRequestModel> CreateCooperationRequest(CooperationRequestModel newCooperationRequest)
+        public async Task<CooperationRequestModel> CreateCooperationRequest(CooperationRequestModel newCooperationRequest, int topicId, string authorId)
         {
-            newCooperationRequest.Topic = await _unitOfWork.Topics.SingleOrDefaultAsync(t => t.Id == 1); ;
+            newCooperationRequest.Topic = await _unitOfWork.Topics.SingleOrDefaultAsync(t => t.Id == topicId);
+            newCooperationRequest.Teacher = await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == authorId);
             newCooperationRequest.CreationDate = System.DateTime.Now;
             newCooperationRequest.Status = CooperationRequestStatus.Waiting;
             await _unitOfWork.CooperationRequests.AddAsync(newCooperationRequest);

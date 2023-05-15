@@ -17,6 +17,8 @@
                 <input asp-for="ApplicantComment" class="form-control" />
                 <span asp-validation-for="ApplicantComment" class="text-danger"></span>
             </div>
+            <input type="text" name="topicId" value="@ViewBag.TopicId" hidden/>
+            <input type="number" name="authorId" value="@ViewBag.AuthorId" hidden />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
