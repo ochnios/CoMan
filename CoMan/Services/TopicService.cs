@@ -112,10 +112,9 @@ namespace CoMan.Services
         }
         private async Task<TeacherUser> GetCurrentTeacherUser()
         {
-            TeacherService teacherService = new TeacherService(_unitOfWork, _userManager);
             var httpContext = new HttpContextAccessor().HttpContext;
             var currentUser = await _userManager.GetUserAsync(httpContext.User);
-            return await teacherService.GetTeacherById(currentUser.Id);
+            return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUser.Id);
         }
     }
 }
