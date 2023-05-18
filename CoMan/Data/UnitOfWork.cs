@@ -6,6 +6,7 @@ namespace CoMan.Data
     {
         private readonly CoManDbContext _context = null!;
         private TeacherRepository _teacherRepository = null!;
+        private StudentRepository _studentRepository = null!;
         private TopicRepository _topicRepository = null!;
         private CooperationRequestRepository _cooperationRequestRepository = null!;
 
@@ -16,6 +17,9 @@ namespace CoMan.Data
 
         public ITeacherRepository Teachers =>
             _teacherRepository = _teacherRepository ?? new TeacherRepository(_context);
+
+        public IStudentRepository Students =>
+            _studentRepository = _studentRepository ?? new StudentRepository(_context);
 
         public ITopicRepository Topics =>
             _topicRepository = _topicRepository ?? new TopicRepository(_context);

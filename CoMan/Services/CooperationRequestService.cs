@@ -29,6 +29,7 @@ namespace CoMan.Services
         {
             newCooperationRequest.Topic = await _unitOfWork.Topics.SingleOrDefaultAsync(t => t.Id == topicId);
             newCooperationRequest.Teacher = await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == authorId);
+            // here should find student and assign it to the cooperation request
             newCooperationRequest.CreationDate = System.DateTime.Now;
             newCooperationRequest.Status = CooperationRequestStatus.Waiting;
             await _unitOfWork.CooperationRequests.AddAsync(newCooperationRequest);
