@@ -17,8 +17,8 @@
                 <input asp-for="ApplicantComment" class="form-control" />
                 <span asp-validation-for="ApplicantComment" class="text-danger"></span>
             </div>
-            <input type="text" name="topicId" value="@ViewBag.TopicId" hidden/>
-            <input type="number" name="authorId" value="@ViewBag.AuthorId" hidden />
+            <input type="text" name="topicId" value="@ViewBag.TopicId" hidden />
+            <input type="number" name="teacherId" value="@ViewBag.TeacherId" hidden />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -31,5 +31,7 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

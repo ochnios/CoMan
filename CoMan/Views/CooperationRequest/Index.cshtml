@@ -1,14 +1,11 @@
 ﻿@model IEnumerable<CoMan.Models.CooperationRequestModel>
 
 @{
-    ViewData["Title"] = "CooperationList";
+    ViewData["Title"] = "Cooperation requests";
 }
 
-<h1>CooperationList</h1>
+<h1>Your cooperation requests</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
 <table class="table">
     <thead>
         <tr>
@@ -25,47 +22,40 @@
                 @Html.DisplayNameFor(model => model.Teacher)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ApplicantComment)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.RecipentComment)
-            </th>
-            <th>
                 @Html.DisplayNameFor(model => model.Status)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.CreationDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ConsiderationDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Student)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Teacher)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.ApplicantComment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.RecipentComment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CreationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ConsiderationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Student.FirstName)
+                    @Html.DisplayFor(modelItem => item.Student.LastName)
+                    <!-- Add link to the student in future -->
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Teacher.FirstName)
+                    @Html.DisplayFor(modelItem => item.Teacher.LastName)
+                    <!-- Add link to the teacher in future -->
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

@@ -55,7 +55,7 @@
     }
     @if ((await AuthorizationService.AuthorizeAsync(User, "RequireStudent")).Succeeded)
     {
-        @Html.ActionLink("Apply","Create", "CooperationRequest", new { topicId = Model.Id, AuthorizationAppBuilderExtensions= Model.Author.Id }, null)
+        @Html.ActionLink("Apply","Create", "CooperationRequest", new { topicId = Model.Id, teacherId = Model.Author.Id }, null)
         <text> | </text>
     }
     <a asp-action="Index">Back to List</a>

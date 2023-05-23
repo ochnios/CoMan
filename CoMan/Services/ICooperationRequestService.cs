@@ -6,7 +6,7 @@ namespace CoMan.Services
     {
         Task<IEnumerable<CooperationRequestModel>> GetAllCooperationRequests();
         Task<CooperationRequestModel> GetCooperationRequestById(int id);
-        Task<CooperationRequestModel> CreateCooperationRequest(CooperationRequestModel newCooperationRequest, int topicId, string authorId);
+        Task<CooperationRequestModel> CreateCooperationRequest(CooperationRequestModel newCooperationRequest, int topicId, string teacherId);
         Task UpdateCooperationRequest(CooperationRequestModel CooperationRequestToBeUpdated, CooperationRequestModel CooperationRequest);
         Task DeleteCooperationRequest(CooperationRequestModel CooperationRequest);
     }

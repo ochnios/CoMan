@@ -29,10 +29,10 @@ namespace CoMan.Controllers
 
         [Authorize(Policy = "RequireStudent")]
         // GET: CooperationRequest/Create
-        public ActionResult Create(int topicId, string authorId)
+        public ActionResult Create(int topicId, string teacherId)
         {
             ViewBag.TopicId = topicId;
-            ViewBag.AuthorId = authorId;
+            ViewBag.TeacherId = teacherId;
             return View(new CooperationRequestModel());
         }
 
@@ -40,11 +40,11 @@ namespace CoMan.Controllers
         [Authorize(Policy = "RequireStudent")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> CreateAsync(CooperationRequestModel cooperationRequest, int topicId, string authorId)
+        public async Task<ActionResult> CreateAsync(CooperationRequestModel cooperationRequest, int topicId, string teacherId)
         {
             try
             {
-                await _cooperationRequestService.CreateCooperationRequest(cooperationRequest, topicId, authorId);
+                await _cooperationRequestService.CreateCooperationRequest(cooperationRequest, topicId, teacherId);
                 return RedirectToAction(nameof(Index));
             }
             catch

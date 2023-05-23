@@ -110,6 +110,7 @@ namespace CoMan.Services
             _unitOfWork.Topics.Remove(Topic);
             await _unitOfWork.CommitAsync();
         }
+
         private async Task<TeacherUser> GetCurrentTeacherUser()
         {
             var httpContext = new HttpContextAccessor().HttpContext;
