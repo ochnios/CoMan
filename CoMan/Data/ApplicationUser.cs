@@ -21,5 +21,11 @@ namespace CoMan.Data
         [Required]
         [MaxLength(256)]
         public string LastName { get; set; } = null!;
+
+        public virtual ICollection<TopicModel>? Topics { get; set; }
+
+        public virtual ICollection<CooperationRequestModel>? CooperationsRequests { get; set; }
+
+        public virtual ICollection<CooperationModel>? Cooperations { get; set; }
     }
 }
