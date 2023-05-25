@@ -10,7 +10,8 @@ namespace CoMan.Services
         Task<IEnumerable<TopicModel>> GetAllTopics();
         Task<dynamic> FindForDatables(DtParameters dtParameters);
         Task<TopicModel> CreateTopic(TopicModel newTopic);
-        Task UpdateTopic(TopicModel TopicToBeUpdated, TopicModel Topic);
-        Task DeleteTopic(TopicModel Topic);
+        Task UpdateTopic(TopicModel topicToBeUpdated, TopicModel updatedTopic);
+        Task DeleteTopic(TopicModel topicToBeDeleted);
+        Task<Boolean> IsUserAllowedToModifyTopic(TopicModel topic);
     }
 }

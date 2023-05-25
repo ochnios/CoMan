@@ -28,6 +28,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireStudent", policy => policy.RequireRole("Student"));
     options.AddPolicy("RequireTeacher", policy => policy.RequireRole("Teacher"));
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("ModifyTopics", policy => policy.RequireRole("Admin", "Teacher"));
 });
 
 builder.Services.AddControllersWithViews()

@@ -1,10 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoMan.Models;
+﻿using CoMan.Models;
 using CoMan.Data;
 using Microsoft.AspNetCore.Identity;
-using NuGet.Protocol;
-using System.Linq.Expressions;
 using CoMan.Models.AuxiliaryModels;
 
 namespace CoMan.Services
@@ -95,27 +91,59 @@ namespace CoMan.Services
             return newTopic;
         }
 
-        public async Task UpdateTopic(TopicModel TopicToBeUpdated, TopicModel Topic)
+        public async Task UpdateTopic(TopicModel topicToBeUpdated, TopicModel updatedTopic)
         {
-            TopicToBeUpdated.Title = Topic.Title;
-            TopicToBeUpdated.Description = Topic.Description;
-            TopicToBeUpdated.StudentLimit = Topic.StudentLimit;
-            TopicToBeUpdated.Status = Topic.Status;
+            topicToBeUpdated.Title = updatedTopic.Title;
+            topicToBeUpdated.Description = updatedTopic.Description;
+            topicToBeUpdated.StudentLimit = updatedTopic.StudentLimit;
+            topicToBeUpdated.Status = updatedTopic.Status;
 
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task DeleteTopic(TopicModel Topic)
+        public async Task DeleteTopic(TopicModel topicToBeDeleted)
         {
-            _unitOfWork.Topics.Remove(Topic);
+            _unitOfWork.Topics.Remove(topicToBeDeleted);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<Boolean> IsUserAllowedToModifyTopic(TopicModel topic)
+        {
+            var currentUserRole = await GetCurrentUserRole();
+            var currentUserId = await GetCurrentUserId();
+            if (currentUserRole.Equals("Admin") || currentUserId.Equals(topic.Author.Id))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private async Task<TeacherUser> GetCurrentTeacherUser()
         {
+            var currentUserId = await GetCurrentUserId();
+            return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUserId);
+        }
+
+        private async Task<string> GetCurrentUserId()
+        {
+            var currentUser = await GetCurrentUser();
+            return currentUser.Id;
+        }
+
+        private async Task<string> GetCurrentUserRole()
+        {
+            var currentUser = await GetCurrentUser();
+            var currentUserRoles = await _userManager.GetRolesAsync(currentUser);
+            return currentUserRoles.First<string>();
+        }
+
+        private async Task<ApplicationUser> GetCurrentUser()
+        {
             var httpContext = new HttpContextAccessor().HttpContext;
-            var currentUser = await _userManager.GetUserAsync(httpContext.User);
-            return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUser.Id);
+            return await _userManager.GetUserAsync(httpContext.User); ;
         }
     }
 }
