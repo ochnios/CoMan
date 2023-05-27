@@ -67,7 +67,7 @@ namespace CoMan.Controllers
             }
             catch
             {
-                return View();
+                return RedirectToAction("Error", "Home");
             }
         }
 
@@ -75,15 +75,14 @@ namespace CoMan.Controllers
         [Authorize(Policy = "ModifyTopics")]
         public async Task<ActionResult> EditAsync(int id)
         {
-            TopicModel topicToBeUpdated = await _topicService.GetTopicById(id);
-            if (await _topicService.IsUserAllowedToModifyTopic(topicToBeUpdated))
+            try
             {
-                // TODO Add checking if topic can be modified (there are no current cooperations and coop requests)
-                return View(topicToBeUpdated);
+                return View(await _topicService.GetTopicForModificationById(id));
             }
-            else
+            catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home"); // TODO Access Denied
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
             }
         }
 
@@ -95,21 +94,14 @@ namespace CoMan.Controllers
         {
             try
             {
-                TopicModel topicToBeUpdated = await _topicService.GetTopicById(id);
-                if (await _topicService.IsUserAllowedToModifyTopic(topicToBeUpdated))
-                {
-                    // TODO Add checking if topic can be modified (there are no current cooperations and coop requests)
-                    await _topicService.UpdateTopic(topicToBeUpdated, updatedTopic);
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    return RedirectToAction("Error", "Home");
-                }
+                TopicModel topicToBeUpdated = await _topicService.GetTopicForModificationById(id);
+                await _topicService.UpdateTopic(topicToBeUpdated, updatedTopic);
+                return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
             }
         }
 
@@ -117,16 +109,14 @@ namespace CoMan.Controllers
         [Authorize(Policy = "ModifyTopics")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            TopicModel topicToBeDeleted = await _topicService.GetTopicById(id);
-            if (await _topicService.IsUserAllowedToModifyTopic(topicToBeDeleted))
+            try
             {
-                // TODO Add checking if topic can be deleted (there are no any cooperations and coop requests connected with topic)
-                // (if there are, suggest change status to Archived)
-                return View(topicToBeDeleted);
+                return View(await _topicService.GetTopicForModificationById(id));
             }
-            else
+            catch (Exception ex)
             {
-                return RedirectToAction("Error", "Home"); // TODO Access Denied
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
             }
         }
 
@@ -134,25 +124,18 @@ namespace CoMan.Controllers
         [Authorize(Policy = "ModifyTopics")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteAsync(int id, TopicModel topic)
+        public async Task<ActionResult> DeleteAsync(int id, TopicModel deletedTopic)
         {
             try
             {
-                if (await _topicService.IsUserAllowedToModifyTopic(topic))
-                {
-                    // TODO Add checking if topic can be deleted (there are no any cooperations and coop requests connected with topic)
-                    // (if there are, suggest change status to Archived)
-                    await _topicService.DeleteTopic(topic);
-                    return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    return RedirectToAction("Error", "Home"); // TODO Access Denied
-                }
+                TopicModel topicToBeDeleted = await _topicService.GetTopicForModificationById(id);
+                await _topicService.DeleteTopic(topicToBeDeleted);
+                return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
             }
         }
     }

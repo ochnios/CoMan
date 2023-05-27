@@ -22,6 +22,28 @@ namespace CoMan.Services
             return await _unitOfWork.Topics
                 .GetByIdAsync(id);
         }
+        public async Task<TopicModel> GetTopicForModificationById(int id)
+        {
+            TopicModel topic = await _unitOfWork.Topics
+                .GetByIdAsync(id);
+
+            if (await isUserAllowedToModify(topic))
+            {
+                if (await canBeModified(topic))
+                {
+                    return topic;
+                }
+                else
+                {
+                    throw new Exception("You can not edit the topic which is related to any cooperation or cooperation request!");
+                }
+            }
+            else
+            {
+                throw new Exception("You are not alllowed to modify others users topics!");
+            }
+        }
+
 
         public async Task<IEnumerable<TopicModel>> GetAllTopics()
         {
@@ -77,7 +99,7 @@ namespace CoMan.Services
 
         public async Task<TopicModel> CreateTopic(TopicModel newTopic)
         {
-            var author = await GetCurrentTeacherUser();
+            var author = await getCurrentTeacherUser();
 
             newTopic.AddedDate = System.DateTime.Now;
             newTopic.Status = TopicStatus.Active;
@@ -107,43 +129,50 @@ namespace CoMan.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task<Boolean> IsUserAllowedToModifyTopic(TopicModel topic)
+        private async Task<Boolean> isUserAllowedToModify(TopicModel topic)
         {
-            var currentUserRole = await GetCurrentUserRole();
-            var currentUserId = await GetCurrentUserId();
-            if (currentUserRole.Equals("Admin") || currentUserId.Equals(topic.Author.Id))
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            var currentUserRole = await getCurrentUserRole();
+            var currentUserId = await getCurrentUserId();
+
+            return (currentUserRole.Equals("Admin") || currentUserId.Equals(topic.Author.Id));
         }
 
-        private async Task<TeacherUser> GetCurrentTeacherUser()
+        private async Task<Boolean> canBeModified(TopicModel topic)
         {
-            var currentUserId = await GetCurrentUserId();
+            return !(await hasAnyRelatedEntities(topic));
+        }
+
+        private async Task<TeacherUser> getCurrentTeacherUser()
+        {
+            var currentUserId = await getCurrentUserId();
             return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUserId);
         }
 
-        private async Task<string> GetCurrentUserId()
+        private async Task<string> getCurrentUserId()
         {
-            var currentUser = await GetCurrentUser();
+            var currentUser = await getCurrentUser();
             return currentUser.Id;
         }
 
-        private async Task<string> GetCurrentUserRole()
+        private async Task<string> getCurrentUserRole()
         {
-            var currentUser = await GetCurrentUser();
+            var currentUser = await getCurrentUser();
             var currentUserRoles = await _userManager.GetRolesAsync(currentUser);
             return currentUserRoles.First<string>();
         }
 
-        private async Task<ApplicationUser> GetCurrentUser()
+        private async Task<ApplicationUser> getCurrentUser()
         {
             var httpContext = new HttpContextAccessor().HttpContext;
             return await _userManager.GetUserAsync(httpContext.User); ;
+        }
+
+        private async Task<Boolean> hasAnyRelatedEntities(TopicModel topic)
+        {
+            var topicRepository = _unitOfWork.Topics;
+            var foundTopic = await topicRepository.SingleOrDefaultAsync(
+                t => t.Id == topic.Id && (t.CooperationRequests.Any() || t.Cooperations.Any()));
+            return foundTopic != null;
         }
     }
 }
