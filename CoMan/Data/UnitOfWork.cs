@@ -9,6 +9,7 @@ namespace CoMan.Data
         private StudentRepository _studentRepository = null!;
         private TopicRepository _topicRepository = null!;
         private CooperationRequestRepository _cooperationRequestRepository = null!;
+        private CooperationRepository _cooperationRepository = null!;
 
         public UnitOfWork(CoManDbContext context)
         {
@@ -26,6 +27,9 @@ namespace CoMan.Data
 
         public ICooperationRequestRepository CooperationRequests =>
             _cooperationRequestRepository = _cooperationRequestRepository ?? new CooperationRequestRepository(_context);
+
+        public ICooperationRepository Cooperations =>
+            _cooperationRepository = _cooperationRepository ?? new CooperationRepository(_context);
 
         public async Task<int> CommitAsync()
         {
