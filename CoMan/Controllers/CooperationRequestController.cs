@@ -1,4 +1,5 @@
 ﻿using CoMan.Models;
+using CoMan.Models.AuxiliaryModels;
 using CoMan.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -16,12 +17,28 @@ namespace CoMan.Controllers
         }
 
         // GET: CooperationRequest
-        public async Task<ActionResult> IndexAsync()
+        public ActionResult Index()
         {
-            return View(await _cooperationRequestService.GetAllCooperationRequests());
+            return View();
         }
 
-        // GET: CooperationRequest/Details/5
+        // POST: /LoadCooperationRequestTable
+        [HttpPost("LoadCooperationRequestTable")]
+        public async Task<IActionResult> LoadCooperationRequestTable([FromBody] DtParameters dtParameters)
+        {
+            var data = await _cooperationRequestService.FindDatablesForCurrentUser(dtParameters);
+
+            return Json(
+                new DtResult<CooperationRequestDatatable>
+                {
+                    Draw = dtParameters.Draw,
+                    RecordsTotal = data.TotalCount,
+                    RecordsFiltered = data.FilteredCount,
+                    Data = data.ResultsForTable
+                });
+        }
+
+        // GET: CooperationRequest/Details/{id}
         public async Task<ActionResult> DetailsAsync(int id)
         {
             return View(await _cooperationRequestService.GetCooperationRequestById(id));
@@ -53,13 +70,13 @@ namespace CoMan.Controllers
             }
         }
 
-        // GET: CooperationRequest/Edit/5
+        // GET: CooperationRequest/Edit/{id}
         public async Task<ActionResult> EditAsync(int id)
         {
             return View(await _cooperationRequestService.GetCooperationRequestById(id));
         }
 
-        // POST: CooperationRequest/Edit/5
+        // POST: CooperationRequest/Edit/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditAsync(int id, CooperationRequestModel cooperationRequest)
@@ -76,13 +93,13 @@ namespace CoMan.Controllers
             }
         }
 
-        // GET: CooperationRequest/Delete/5
+        // GET: CooperationRequest/Delete/{id}
         public async Task<ActionResult> DeleteAsync(int id)
         {
             return View(await _cooperationRequestService.GetCooperationRequestById(id));
         }
 
-        // POST: CooperationRequest/Delete/5
+        // POST: CooperationRequest/Delete/{id}
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteAsync(int id, CooperationRequestModel cooperationRequest)

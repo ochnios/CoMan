@@ -1,8 +1,7 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
 using CoMan.Data;
-using jQueryDatatableServerSideNetCore.Extensions;
-using System;
+using CoMan.Extensions;
 
 namespace CoMan.Repositories
 {

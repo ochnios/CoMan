@@ -6,56 +6,71 @@
 
 <h1>Your cooperation requests</h1>
 
-<table class="table">
+<table id="cooperation-requests-table" class="table table-striped table-bordered dt-responsive" width="100%" cellspacing="0">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.CreationDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.ConsiderationDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Student)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Teacher)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Status)
-            </th>
+            <th>@Html.DisplayNameFor(model => model.CreationDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Status)</th>
+            <th>@Html.DisplayNameFor(model => model.ConsiderationDate)</th>
+            <th>@Html.DisplayNameFor(model => model.Student)</th>
+            <th>@Html.DisplayNameFor(model => model.Teacher)</th>
             <th></th>
         </tr>
     </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>
-                    @Html.DisplayFor(modelItem => item.CreationDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.ConsiderationDate)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Student.FirstName)
-                    @Html.DisplayFor(modelItem => item.Student.LastName)
-                    <!-- Add link to the student in future -->
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Teacher.FirstName)
-                    @Html.DisplayFor(modelItem => item.Teacher.LastName)
-                    <!-- Add link to the teacher in future -->
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.Status)
-                </td>
-                <td>
-                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-                </td>
-            </tr>
-        }
-    </tbody>
 </table>
+
+
+@section Scripts {
+    <script src="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.js" asp-append-version="true"></script>
+    <script asp-append-version="true">
+        var table;
+
+        $(document).ready(function () {
+            table = $("#cooperation-requests-table").DataTable({
+                // Design Assets
+                stateSave: false,
+                autoWidth: true,
+                // ServerSide Setups
+                processing: true,
+                serverSide: true,
+                // Paging Setups
+                paging: true,
+                // Searching Setups
+                searching: { regex: true },
+                // Ajax Filter
+                ajax: {
+                    url: "/LoadCooperationRequestTable",
+                    type: "POST",
+                    contentType: "application/json",
+                    dataType: "json",
+                    data: function (d) {
+                        return JSON.stringify(d);
+                    }
+                },
+                // Columns Setups
+                columns: [
+                    { data: "creationDate" },
+                    { data: "status" },
+                    { data: "considerationDate" },
+                    { data: "student" },
+                    { data: "teacher" }
+                ],
+                // Column Definitions
+                columnDefs: [
+                    { targets: "no-sort", orderable: false },
+                    { targets: "no-search", searchable: false },
+                    { targets: 1, orderable: false },
+                    {
+                        targets: 5,
+                        data: null,
+                        defaultContent: "<a class='btn btn-link' role='button' href='#'>Details</a>",
+                        render: function (data, type, row, meta) {
+                            return "<a class='btn btn-link' role='button' href='/CooperationRequest/Details/" + data.id + "'>Details</a>";
+                        },
+                        orderable: false
+                    }
+                ]
+            });
+        });
+    </script>
+}
