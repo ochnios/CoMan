@@ -1,8 +1,6 @@
-﻿using System.ComponentModel;
-
-namespace CoMan.Models.AuxiliaryModels
+﻿namespace CoMan.Models.AuxiliaryModels
 {
-    public class TopicTable
+    public class TopicDatatable
     {
         public int Id { get; set; }
 

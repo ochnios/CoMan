@@ -2,6 +2,7 @@
 using CoMan.Data;
 using Microsoft.AspNetCore.Identity;
 using CoMan.Models.AuxiliaryModels;
+using CoMan.Extensions;
 
 namespace CoMan.Services
 {
@@ -74,10 +75,10 @@ namespace CoMan.Services
                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
                 );
 
-            List<TopicTable> resultsForDatatable = new List<TopicTable>();
+            List<TopicDatatable> resultsForDatatable = new List<TopicDatatable>();
             foreach (var item in rawResults.Results)
             {
-                resultsForDatatable.Add(new TopicTable()
+                resultsForDatatable.Add(new TopicDatatable()
                 {
                     Id = item.Id,
                     AddedDate = item.AddedDate.ToString("dd.MM.yyyy"),
@@ -131,10 +132,10 @@ namespace CoMan.Services
 
         private async Task<Boolean> isUserAllowedToModify(TopicModel topic)
         {
-            var currentUserRole = await getCurrentUserRole();
-            var currentUserId = await getCurrentUserId();
+            var isAdmin = await _userManager.IsCurrentUserInRole("Admin");
+            var currentUserId = await _userManager.GetCurrentUserId();
 
-            return (currentUserRole.Equals("Admin") || currentUserId.Equals(topic.Author.Id));
+            return (isAdmin || currentUserId.Equals(topic.Author.Id));
         }
 
         private async Task<Boolean> canBeModified(TopicModel topic)
@@ -144,27 +145,8 @@ namespace CoMan.Services
 
         private async Task<TeacherUser> getCurrentTeacherUser()
         {
-            var currentUserId = await getCurrentUserId();
+            var currentUserId = await _userManager.GetCurrentUserId();
             return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUserId);
-        }
-
-        private async Task<string> getCurrentUserId()
-        {
-            var currentUser = await getCurrentUser();
-            return currentUser.Id;
-        }
-
-        private async Task<string> getCurrentUserRole()
-        {
-            var currentUser = await getCurrentUser();
-            var currentUserRoles = await _userManager.GetRolesAsync(currentUser);
-            return currentUserRoles.First<string>();
-        }
-
-        private async Task<ApplicationUser> getCurrentUser()
-        {
-            var httpContext = new HttpContextAccessor().HttpContext;
-            return await _userManager.GetUserAsync(httpContext.User); ;
         }
 
         private async Task<Boolean> hasAnyRelatedEntities(TopicModel topic)

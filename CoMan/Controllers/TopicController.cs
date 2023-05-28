@@ -18,20 +18,20 @@ namespace CoMan.Controllers
 
         // GET: Topic
         [AllowAnonymous]
-        public async Task<ActionResult> IndexAsync()
+        public ActionResult Index()
         {
-            return View(await _topicService.GetAllTopics());
+            return View();
         }
 
-        // POST: Topic/LoadTable/{id}
+        // POST: /LoadTopicTable
         [AllowAnonymous]
-        [HttpPost("LoadTable")]
-        public async Task<IActionResult> LoadTable([FromBody] DtParameters dtParameters)
+        [HttpPost("LoadTopicTable")]
+        public async Task<IActionResult> LoadTopicTable([FromBody] DtParameters dtParameters)
         {
             var data = await _topicService.FindForDatables(dtParameters);
 
             return Json(
-                new DtResult<TopicTable>
+                new DtResult<TopicDatatable>
                 {
                     Draw = dtParameters.Draw,
                     RecordsTotal = data.TotalCount,

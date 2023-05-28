@@ -3,7 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using CoMan.Models.AuxiliaryModels;
 
-namespace jQueryDatatableServerSideNetCore.Extensions
+namespace CoMan.Extensions
 {
     public static class LinqExtensions
     {
