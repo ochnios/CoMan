@@ -5,7 +5,7 @@ namespace CoMan.Extensions
 {
     public static class UserManagerExtensions
     {
-        private static HttpContextAccessor _contextAccessor = new HttpContextAccessor();
+        private static readonly HttpContextAccessor _contextAccessor = new();
 
         public static async Task<string> GetCurrentUserId(this UserManager<ApplicationUser> userManager) {
             var currentUser = await getCurrentUser(userManager);
@@ -23,7 +23,7 @@ namespace CoMan.Extensions
             if (_contextAccessor == null)
                 throw new NullReferenceException(nameof(_contextAccessor));
 
-            return await userManager.GetUserAsync(_contextAccessor.HttpContext.User);
+            return await userManager.GetUserAsync(_contextAccessor.HttpContext!.User);
         }
     }
 }

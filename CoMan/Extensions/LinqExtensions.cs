@@ -36,11 +36,11 @@ namespace CoMan.Extensions
             {
 
                 var properties = typeof(T).GetProperties()
-                    .Where(x => x.CanRead && x.CanWrite && !x.GetGetMethod().IsVirtual);
+                    .Where(x => x.CanRead && x.CanWrite && !x.GetGetMethod()!.IsVirtual);
 
                 //Expression
                 sourceList = sourceList.Where(c =>
-                    properties.Any(p => p.GetValue(c) != null && p.GetValue(c).ToString()
+                    properties.Any(p => p.GetValue(c) != null && p.GetValue(c)!.ToString()!
                         .Contains(query, StringComparison.InvariantCultureIgnoreCase)));
             }
             catch (Exception e)

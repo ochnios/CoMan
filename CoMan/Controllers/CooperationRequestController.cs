@@ -26,16 +26,27 @@ namespace CoMan.Controllers
         [HttpPost("LoadCooperationRequestTable")]
         public async Task<IActionResult> LoadCooperationRequestTable([FromBody] DtParameters dtParameters)
         {
-            var data = await _cooperationRequestService.FindDatablesForCurrentUser(dtParameters);
+            try
+            {
+                var data = await _cooperationRequestService.FindDatablesForCurrentUser(dtParameters);
 
-            return Json(
-                new DtResult<CooperationRequestDatatable>
-                {
-                    Draw = dtParameters.Draw,
-                    RecordsTotal = data.TotalCount,
-                    RecordsFiltered = data.FilteredCount,
-                    Data = data.ResultsForTable
-                });
+                return Json(
+                    new DtResult<CooperationRequestDatatable>
+                    {
+                        Draw = dtParameters.Draw,
+                        RecordsTotal = data.TotalCount,
+                        RecordsFiltered = data.FilteredCount,
+                        Data = data.ResultsForTable
+                    });
+            }
+            catch (Exception ex)
+            {
+                return Json(
+                    new DtResult<TopicDatatable>
+                    {
+                        Error = ex.Message,
+                    });
+            }
         }
 
         // GET: CooperationRequest/Details/{id}

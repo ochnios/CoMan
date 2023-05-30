@@ -28,16 +28,28 @@ namespace CoMan.Controllers
         [HttpPost("LoadTopicTable")]
         public async Task<IActionResult> LoadTopicTable([FromBody] DtParameters dtParameters)
         {
-            var data = await _topicService.FindForDatables(dtParameters);
+            try
+            {
+                var data = await _topicService.FindForDatables(dtParameters);
 
-            return Json(
-                new DtResult<TopicDatatable>
-                {
-                    Draw = dtParameters.Draw,
-                    RecordsTotal = data.TotalCount,
-                    RecordsFiltered = data.FilteredCount,
-                    Data = data.ResultsForTable
-                });
+                return Json(
+                    new DtResult<TopicDatatable>
+                    {
+                        Draw = dtParameters.Draw,
+                        RecordsTotal = data.TotalCount,
+                        RecordsFiltered = data.FilteredCount,
+                        Data = data.ResultsForTable
+                    });
+            }
+            catch (Exception ex)
+            {
+                return Json(
+                    new DtResult<TopicDatatable>
+                    {
+                        Error = ex.Message,
+                    });
+            }
+
         }
 
         // GET: Topic/Details/{id}

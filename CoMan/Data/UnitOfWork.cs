@@ -17,19 +17,19 @@ namespace CoMan.Data
         }
 
         public ITeacherRepository Teachers =>
-            _teacherRepository = _teacherRepository ?? new TeacherRepository(_context);
+            _teacherRepository ??= new TeacherRepository(_context);
 
         public IStudentRepository Students =>
-            _studentRepository = _studentRepository ?? new StudentRepository(_context);
+            _studentRepository ??= new StudentRepository(_context);
 
         public ITopicRepository Topics =>
-            _topicRepository = _topicRepository ?? new TopicRepository(_context);
+            _topicRepository ??= new TopicRepository(_context);
 
         public ICooperationRequestRepository CooperationRequests =>
-            _cooperationRequestRepository = _cooperationRequestRepository ?? new CooperationRequestRepository(_context);
+            _cooperationRequestRepository ??= new CooperationRequestRepository(_context);
 
         public ICooperationRepository Cooperations =>
-            _cooperationRepository = _cooperationRepository ?? new CooperationRepository(_context);
+            _cooperationRepository ??= new CooperationRepository(_context);
 
         public async Task<int> CommitAsync()
         {

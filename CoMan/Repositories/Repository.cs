@@ -16,12 +16,12 @@ namespace CoMan.Repositories
 
         public ValueTask<TEntity> GetByIdAsync(int id)
         {
-            return Context.Set<TEntity>().FindAsync(id);
+            return Context.Set<TEntity>().FindAsync(id)!;
         }
 
         public ValueTask<TEntity> GetByIdAsync(string id)
         {
-            return Context.Set<TEntity>().FindAsync(id);
+            return Context.Set<TEntity>().FindAsync(id)!;
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
@@ -50,7 +50,7 @@ namespace CoMan.Repositories
 
         public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return Context.Set<TEntity>().SingleOrDefaultAsync(predicate);
+            return Context.Set<TEntity>().SingleOrDefaultAsync(predicate)!;
         }
 
         public async Task AddAsync(TEntity entity)

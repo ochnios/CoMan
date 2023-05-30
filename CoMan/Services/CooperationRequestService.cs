@@ -33,7 +33,14 @@ namespace CoMan.Services
 
         public async Task<dynamic> FindDatablesForCurrentUser(DtParameters dtParameters)
         {
-            var searchBy = dtParameters.Search.Value.ToUpper();
+            if (dtParameters == null)
+            {
+                throw new ArgumentNullException(nameof(dtParameters));
+            }
+
+            var searchParams = dtParameters.Search ?? new DtSearch();
+            var searchBy = dtParameters.Search!.Value ?? string.Empty;
+            searchBy = searchBy.ToUpper();
 
             // if we have an empty search then just order the results by Id ascending
             var orderCriteria = "Id";
@@ -42,22 +49,22 @@ namespace CoMan.Services
             if (dtParameters.Order != null)
             {
                 // sort on the 1st column
-                orderCriteria = dtParameters.Columns[dtParameters.Order[0].Column].Data;
+                orderCriteria = dtParameters.Columns![dtParameters.Order[0].Column].Data ?? string.Empty;
                 orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
             }
 
             var currentUserId = await _userManager.GetCurrentUserId();
 
             var rawResults = await _unitOfWork.CooperationRequests
-                .FindForDatatables((r => (currentUserId.Equals(r.Teacher.Id) || currentUserId.Equals(r.Student.Id)) &&
+                .FindForDatatables((r => (currentUserId.Equals(r.Teacher!.Id) || currentUserId.Equals(r.Student!.Id)) &&
                            (r.Teacher.FirstName.ToUpper().Contains(searchBy) ||
                            r.Teacher.LastName.ToUpper().Contains(searchBy) ||
-                           r.Student.FirstName.ToUpper().Contains(searchBy) ||
-                           r.Student.LastName.ToUpper().Contains(searchBy))),
+                           r.Student!.FirstName.ToUpper().Contains(searchBy) ||
+                           r.Student!.LastName.ToUpper().Contains(searchBy))),
                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
                 );
 
-            List<CooperationRequestDatatable> resultsForDatatable = new List<CooperationRequestDatatable>();
+            List<CooperationRequestDatatable> resultsForDatatable = new();
             foreach (var item in rawResults.Results)
             {
                 resultsForDatatable.Add(new CooperationRequestDatatable()
@@ -114,7 +121,7 @@ namespace CoMan.Services
         private async Task<StudentUser> GetCurrentStudentUser()
         {
             var httpContext = new HttpContextAccessor().HttpContext;
-            var currentUser = await _userManager.GetUserAsync(httpContext.User);
+            var currentUser = await _userManager.GetUserAsync(httpContext!.User);
             return await _unitOfWork.Students.SingleOrDefaultAsync(t => t.Id == currentUser.Id);
         }
     }

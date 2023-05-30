@@ -54,7 +54,14 @@ namespace CoMan.Services
 
         public async Task<dynamic> FindForDatables(DtParameters dtParameters)
         {
-            var searchBy = dtParameters.Search.Value.ToUpper();
+            if (dtParameters == null)
+            {
+                throw new ArgumentNullException(nameof(dtParameters));
+            }
+
+            var searchParams = dtParameters.Search ?? new DtSearch();
+            var searchBy = dtParameters.Search!.Value ?? string.Empty;
+            searchBy = searchBy.ToUpper();
 
             // if we have an empty search then just order the results by Id ascending
             var orderCriteria = "Id";
@@ -63,7 +70,7 @@ namespace CoMan.Services
             if (dtParameters.Order != null)
             {
                 // sort on the 1st column
-                orderCriteria = dtParameters.Columns[dtParameters.Order[0].Column].Data;
+                orderCriteria = dtParameters.Columns![dtParameters.Order[0].Column].Data ?? string.Empty;
                 orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
             }
 
@@ -75,7 +82,7 @@ namespace CoMan.Services
                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
                 );
 
-            List<TopicDatatable> resultsForDatatable = new List<TopicDatatable>();
+            List<TopicDatatable> resultsForDatatable = new();
             foreach (var item in rawResults.Results)
             {
                 resultsForDatatable.Add(new TopicDatatable()
@@ -153,7 +160,7 @@ namespace CoMan.Services
         {
             var topicRepository = _unitOfWork.Topics;
             var foundTopic = await topicRepository.SingleOrDefaultAsync(
-                t => t.Id == topic.Id && (t.CooperationRequests.Any() || t.Cooperations.Any()));
+                t => t.Id == topic.Id && (t.CooperationRequests!.Any() || t.Cooperations!.Any()));
             return foundTopic != null;
         }
     }
