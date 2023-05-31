@@ -9,7 +9,8 @@ namespace CoMan.Models
     {
         Waiting,
         Accepted,
-        Rejected
+        Rejected,
+        Archived
     }
 
     [Table("CooperationRequests")]

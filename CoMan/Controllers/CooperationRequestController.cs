@@ -23,6 +23,7 @@ namespace CoMan.Controllers
         }
 
         // POST: /LoadCooperationRequestTable
+        [Authorize(Policy = "ViewCooperationRequests")]
         [HttpPost("LoadCooperationRequestTable")]
         public async Task<IActionResult> LoadCooperationRequestTable([FromBody] DtParameters dtParameters)
         {
@@ -50,9 +51,18 @@ namespace CoMan.Controllers
         }
 
         // GET: CooperationRequest/Details/{id}
+        [Authorize(Policy = "ViewCooperationRequests")]
         public async Task<ActionResult> DetailsAsync(int id)
         {
-            return View(await _cooperationRequestService.GetCooperationRequestById(id));
+            try
+            {
+                return View(await _cooperationRequestService.GetCooperationRequestById(id));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         [Authorize(Policy = "RequireStudent")]
@@ -75,19 +85,30 @@ namespace CoMan.Controllers
                 await _cooperationRequestService.CreateCooperationRequest(cooperationRequest, topicId, teacherId);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
             }
         }
 
         // GET: CooperationRequest/Edit/{id}
+        [Authorize(Policy = "ModifyCooperationRequests")]
         public async Task<ActionResult> EditAsync(int id)
         {
-            return View(await _cooperationRequestService.GetCooperationRequestById(id));
+            try
+            {
+                return View(await _cooperationRequestService.GetCooperationRequestById(id));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         // POST: CooperationRequest/Edit/{id}
+        [Authorize(Policy = "ModifyCooperationRequests")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> EditAsync(int id, CooperationRequestModel cooperationRequest)
@@ -98,31 +119,44 @@ namespace CoMan.Controllers
                 await _cooperationRequestService.UpdateCooperationRequest(cooperationRequestToBeUpdated, cooperationRequest);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
             }
         }
 
         // GET: CooperationRequest/Delete/{id}
+        [Authorize(Policy = "RequireStudent")]
         public async Task<ActionResult> DeleteAsync(int id)
         {
-            return View(await _cooperationRequestService.GetCooperationRequestById(id));
+            try
+            {
+                return View(await _cooperationRequestService.GetCooperationRequestById(id));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
         }
 
         // POST: CooperationRequest/Delete/{id}
+        [Authorize(Policy = "RequireStudent")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> DeleteAsync(int id, CooperationRequestModel cooperationRequest)
         {
             try
             {
-                await _cooperationRequestService.DeleteCooperationRequest(cooperationRequest);
+                CooperationRequestModel cooperationRequestToBeDeleted = await _cooperationRequestService.GetCooperationRequestById(id);
+                await _cooperationRequestService.DeleteCooperationRequest(cooperationRequestToBeDeleted);
                 return RedirectToAction(nameof(Index));
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
             }
         }
     }

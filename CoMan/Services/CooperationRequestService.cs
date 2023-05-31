@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoMan.Models;
+﻿using CoMan.Models;
 using CoMan.Data;
 using Microsoft.AspNetCore.Identity;
 using CoMan.Models.AuxiliaryModels;
@@ -21,14 +19,17 @@ namespace CoMan.Services
 
         public async Task<CooperationRequestModel> GetCooperationRequestById(int id)
         {
-            return await _unitOfWork.CooperationRequests
-                .GetByIdAsync(id);
-        }
+            var cooperationRequest = await _unitOfWork.CooperationRequests.GetByIdAsync(id);
+            var currentUserId = await _userManager.GetCurrentUserId();
 
-        public async Task<IEnumerable<CooperationRequestModel>> GetAllCooperationRequestsForCurrentUser()
-        {
-            return await _unitOfWork.CooperationRequests
-                .GetAllAsync();
+            if (currentUserId.Equals(cooperationRequest.Student!.Id) || currentUserId.Equals(cooperationRequest.Teacher!.Id))
+            {
+                return cooperationRequest;
+            }
+            else
+            {
+                throw new Exception("You are not allowed to view this cooperation request!");
+            }
         }
 
         public async Task<dynamic> FindDatablesForCurrentUser(DtParameters dtParameters)
@@ -103,19 +104,43 @@ namespace CoMan.Services
             return newCooperationRequest;
         }
 
-        public async Task UpdateCooperationRequest(CooperationRequestModel CooperationRequestToBeUpdated, CooperationRequestModel CooperationRequest)
+        public async Task UpdateCooperationRequest(CooperationRequestModel cooperationRequestToBeUpdated, CooperationRequestModel updatedCooperationRequest)
         {
-            CooperationRequestToBeUpdated.ApplicantComment = CooperationRequest.ApplicantComment;
-            CooperationRequestToBeUpdated.RecipentComment = CooperationRequest.RecipentComment;
-            CooperationRequestToBeUpdated.Status = CooperationRequest.Status;
+            if (cooperationRequestToBeUpdated.Status == CooperationRequestStatus.Accepted)
+            {
+                throw new Exception("You can't update accepted cooperation requests!");
+            }
+
+            var currentUserId = await _userManager.GetCurrentUserId();
+            if (currentUserId.Equals(cooperationRequestToBeUpdated.Student!.Id))
+            {
+                cooperationRequestToBeUpdated.ApplicantComment = updatedCooperationRequest.ApplicantComment;
+            }
+            else if (currentUserId.Equals(cooperationRequestToBeUpdated.Teacher!.Id))
+            {
+                cooperationRequestToBeUpdated.ApplicantComment = updatedCooperationRequest.ApplicantComment;
+            }
+            else
+            {
+                throw new Exception("You are not allowed to modify this cooperation request!");
+            }
 
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task DeleteCooperationRequest(CooperationRequestModel CooperationRequest)
+        public async Task DeleteCooperationRequest(CooperationRequestModel cooperationRequestToBeDeleted)
         {
-            _unitOfWork.CooperationRequests.Remove(CooperationRequest);
-            await _unitOfWork.CommitAsync();
+            var currentUserId = await _userManager.GetCurrentUserId();
+            if (currentUserId.Equals(cooperationRequestToBeDeleted.Student!.Id))
+            {
+                _unitOfWork.CooperationRequests.Remove(cooperationRequestToBeDeleted);
+                await _unitOfWork.CommitAsync();
+            }
+            else
+            {
+                throw new Exception("You are not allowed to delete this cooperation request!");
+            }
+
         }
 
         private async Task<StudentUser> GetCurrentStudentUser()
