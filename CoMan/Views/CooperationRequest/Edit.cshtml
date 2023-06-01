@@ -15,22 +15,11 @@
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
-            @if ((await AuthorizationService.AuthorizeAsync(User, "RequireTeacher")).Succeeded)
-            {
-                <div class="form-group">
-                    <label asp-for="RecipentComment" class="control-label"></label>
-                    <input asp-for="RecipentComment" class="form-control" />
-                    <span asp-validation-for="RecipentComment" class="text-danger"></span>
-                </div>
-            }
-            @if ((await AuthorizationService.AuthorizeAsync(User, "RequireStudent")).Succeeded)
-            {
-                <div class="form-group">
-                    <label asp-for="ApplicantComment" class="control-label"></label>
-                    <input asp-for="ApplicantComment" class="form-control" />
-                    <span asp-validation-for="ApplicantComment" class="text-danger"></span>
-                </div>
-            }
+            <div class="form-group">
+                <label asp-for="ApplicantComment" class="control-label"></label>
+                <textarea asp-for="ApplicantComment" class="form-control"></textarea>
+                <span asp-validation-for="ApplicantComment" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />
             </div>

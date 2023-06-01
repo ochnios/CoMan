@@ -56,7 +56,7 @@ namespace CoMan.Controllers
         {
             try
             {
-                return View(await _cooperationRequestService.GetCooperationRequestById(id));
+                return View(await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id));
             }
             catch (Exception ex)
             {
@@ -93,12 +93,12 @@ namespace CoMan.Controllers
         }
 
         // GET: CooperationRequest/Edit/{id}
-        [Authorize(Policy = "ModifyCooperationRequests")]
+        [Authorize(Policy = "RequireStudent")]
         public async Task<ActionResult> EditAsync(int id)
         {
             try
             {
-                return View(await _cooperationRequestService.GetCooperationRequestById(id));
+                return View(await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id));
             }
             catch (Exception ex)
             {
@@ -108,15 +108,114 @@ namespace CoMan.Controllers
         }
 
         // POST: CooperationRequest/Edit/{id}
-        [Authorize(Policy = "ModifyCooperationRequests")]
+        [Authorize(Policy = "RequireStudent")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> EditAsync(int id, CooperationRequestModel cooperationRequest)
+        public async Task<ActionResult> EditAsync(int id, CooperationRequestModel updatedCooperationRequest)
         {
             try
             {
-                CooperationRequestModel cooperationRequestToBeUpdated = await _cooperationRequestService.GetCooperationRequestById(id);
-                await _cooperationRequestService.UpdateCooperationRequest(cooperationRequestToBeUpdated, cooperationRequest);
+                await _cooperationRequestService.UpdateCooperationRequest(id, updatedCooperationRequest);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+
+        // GET: CooperationRequest/Accept/{id}
+        [Authorize(Policy = "RequireTeacher")]
+        public async Task<ActionResult> AcceptAsync(int id)
+        {
+            try
+            {
+                return View(await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // POST: CooperationRequest/Accept/{id}
+        [Authorize(Policy = "RequireTeacher")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> AcceptAsync(int id, CooperationRequestModel acceptedCooperationRequest)
+        {
+            try
+            {
+                await _cooperationRequestService.AcceptCooperationRequest(id, acceptedCooperationRequest);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // GET: CooperationRequest/Reject/{id}
+        [Authorize(Policy = "RequireTeacher")]
+        public async Task<ActionResult> RejectAsync(int id)
+        {
+            try
+            {
+                return View(await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // POST: CooperationRequest/Reject/{id}
+        [Authorize(Policy = "RequireTeacher")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> RejectAsync(int id, CooperationRequestModel rejectedCooperationRequest)
+        {
+            try
+            {
+                await _cooperationRequestService.RejectCooperationRequest(id, rejectedCooperationRequest);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // GET: CooperationRequest/Archive/{id}
+        [Authorize(Policy = "RequireTeacher")]
+        public async Task<ActionResult> ArchiveAsync(int id)
+        {
+            try
+            {
+                return View(await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // POST: CooperationRequest/Archive/{id}
+        [Authorize(Policy = "RequireTeacher")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ArchiveAsync(int id, CooperationRequestModel archivedCooperationRequest)
+        {
+            try
+            {
+                await _cooperationRequestService.ArchiveCooperationRequest(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -132,7 +231,7 @@ namespace CoMan.Controllers
         {
             try
             {
-                return View(await _cooperationRequestService.GetCooperationRequestById(id));
+                return View(await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id));
             }
             catch (Exception ex)
             {
@@ -145,12 +244,11 @@ namespace CoMan.Controllers
         [Authorize(Policy = "RequireStudent")]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteAsync(int id, CooperationRequestModel cooperationRequest)
+        public async Task<ActionResult> DeleteAsync(int id, CooperationRequestModel deletedCooperationRequest)
         {
             try
             {
-                CooperationRequestModel cooperationRequestToBeDeleted = await _cooperationRequestService.GetCooperationRequestById(id);
-                await _cooperationRequestService.DeleteCooperationRequest(cooperationRequestToBeDeleted);
+                await _cooperationRequestService.DeleteCooperationRequest(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

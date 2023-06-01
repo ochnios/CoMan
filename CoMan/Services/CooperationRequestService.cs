@@ -13,11 +13,11 @@ namespace CoMan.Services
 
         public CooperationRequestService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
-            this._unitOfWork = unitOfWork;
-            this._userManager = userManager;
+            _unitOfWork = unitOfWork;
+            _userManager = userManager;
         }
 
-        public async Task<CooperationRequestModel> GetCooperationRequestById(int id)
+        public async Task<CooperationRequestModel> GetCooperationRequestForCurrentUserById(int id)
         {
             var cooperationRequest = await _unitOfWork.CooperationRequests.GetByIdAsync(id);
             var currentUserId = await _userManager.GetCurrentUserId();
@@ -28,7 +28,7 @@ namespace CoMan.Services
             }
             else
             {
-                throw new Exception("You are not allowed to view this cooperation request!");
+                throw new Exception("You are not allowed to manage this cooperation request!");
             }
         }
 
@@ -104,43 +104,74 @@ namespace CoMan.Services
             return newCooperationRequest;
         }
 
-        public async Task UpdateCooperationRequest(CooperationRequestModel cooperationRequestToBeUpdated, CooperationRequestModel updatedCooperationRequest)
+        public async Task UpdateCooperationRequest(int id, CooperationRequestModel updatedCooperationRequest)
         {
-            if (cooperationRequestToBeUpdated.Status == CooperationRequestStatus.Accepted)
+            var cooperationRequestToBeUpdated = await GetCooperationRequestForCurrentUserById(id);
+            if(!CanBeUpdated(cooperationRequestToBeUpdated))
             {
-                throw new Exception("You can't update accepted cooperation requests!");
+                throw new Exception("Cooperation request cannot be updated!");
             }
 
-            var currentUserId = await _userManager.GetCurrentUserId();
-            if (currentUserId.Equals(cooperationRequestToBeUpdated.Student!.Id))
-            {
-                cooperationRequestToBeUpdated.ApplicantComment = updatedCooperationRequest.ApplicantComment;
-            }
-            else if (currentUserId.Equals(cooperationRequestToBeUpdated.Teacher!.Id))
-            {
-                cooperationRequestToBeUpdated.ApplicantComment = updatedCooperationRequest.ApplicantComment;
-            }
-            else
-            {
-                throw new Exception("You are not allowed to modify this cooperation request!");
-            }
-
+            cooperationRequestToBeUpdated.ApplicantComment = updatedCooperationRequest.ApplicantComment;
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task DeleteCooperationRequest(CooperationRequestModel cooperationRequestToBeDeleted)
+        public async Task AcceptCooperationRequest(int id, CooperationRequestModel acceptedCooperationRequest)
         {
-            var currentUserId = await _userManager.GetCurrentUserId();
-            if (currentUserId.Equals(cooperationRequestToBeDeleted.Student!.Id))
+            var cooperationRequestToBeAccepted = await GetCooperationRequestForCurrentUserById(id);
+            if(!CanBeAccepted(cooperationRequestToBeAccepted))
             {
-                _unitOfWork.CooperationRequests.Remove(cooperationRequestToBeDeleted);
-                await _unitOfWork.CommitAsync();
-            }
-            else
-            {
-                throw new Exception("You are not allowed to delete this cooperation request!");
+                throw new Exception("Cooperation request cannot be accepted!");
             }
 
+            cooperationRequestToBeAccepted.Status = CooperationRequestStatus.Accepted;
+            cooperationRequestToBeAccepted.ConsiderationDate = System.DateTime.Now;
+            cooperationRequestToBeAccepted.RecipentComment = acceptedCooperationRequest.RecipentComment;
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task RejectCooperationRequest(int id, CooperationRequestModel rejectedCooperationRequest)
+        {
+            var cooperationRequestToBeRejected = await GetCooperationRequestForCurrentUserById(id);
+            if(!CanBeRejected(cooperationRequestToBeRejected))
+            {
+                throw new Exception("Cooperation request cannot be rejected!");
+            }
+
+            cooperationRequestToBeRejected.Status = CooperationRequestStatus.Rejected;
+            cooperationRequestToBeRejected.ConsiderationDate = System.DateTime.Now;
+            cooperationRequestToBeRejected.RecipentComment = rejectedCooperationRequest.RecipentComment;
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task ArchiveCooperationRequest(int id)
+        {
+            var cooperationRequestToBeArchived = await GetCooperationRequestForCurrentUserById(id);
+            if(!CanBeArchived(cooperationRequestToBeArchived))
+            {
+                throw new Exception("Cooperation request cannot be archived!");
+            }
+
+            cooperationRequestToBeArchived.Status = CooperationRequestStatus.Archived;
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task DeleteCooperationRequest(int id)
+        {
+            var cooperationRequestToBeDeleted = await GetCooperationRequestForCurrentUserById(id);
+            if(!CanBeDeleted(cooperationRequestToBeDeleted))
+            {
+                throw new Exception("Cooperation request cannot be deleted!");
+            }
+
+            _unitOfWork.CooperationRequests.Remove(cooperationRequestToBeDeleted);
+            await _unitOfWork.CommitAsync();
+        }
+
+        private async Task<Boolean> IsCurrentUserAllowedToModify(CooperationRequestModel cooperationRequest)
+        {
+            var currentUserId = await _userManager.GetCurrentUserId();
+            return (currentUserId.Equals(cooperationRequest.Student!.Id) || currentUserId.Equals(cooperationRequest.Teacher!.Id));
         }
 
         private async Task<StudentUser> GetCurrentStudentUser()
@@ -148,6 +179,31 @@ namespace CoMan.Services
             var httpContext = new HttpContextAccessor().HttpContext;
             var currentUser = await _userManager.GetUserAsync(httpContext!.User);
             return await _unitOfWork.Students.SingleOrDefaultAsync(t => t.Id == currentUser.Id);
+        }
+
+        private Boolean CanBeUpdated(CooperationRequestModel cooperationRequest)
+        {
+            return cooperationRequest.Status == CooperationRequestStatus.Waiting;
+        }
+
+        private Boolean CanBeDeleted(CooperationRequestModel cooperationRequest)
+        {
+            return cooperationRequest.Status == CooperationRequestStatus.Waiting;
+        }
+
+        private Boolean CanBeArchived(CooperationRequestModel cooperationRequest)
+        {
+            return cooperationRequest.Status == CooperationRequestStatus.Accepted;
+        }
+
+        private Boolean CanBeAccepted(CooperationRequestModel cooperationRequest)
+        {
+            return cooperationRequest.Status == CooperationRequestStatus.Waiting;
+        }
+
+        private Boolean CanBeRejected(CooperationRequestModel cooperationRequest)
+        {
+            return cooperationRequest.Status == CooperationRequestStatus.Waiting;
         }
     }
 }

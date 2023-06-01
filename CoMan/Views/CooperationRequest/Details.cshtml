@@ -77,9 +77,9 @@
     {
         if (Model.Status == CooperationRequestStatus.Waiting)
         {
-            @Html.ActionLink("Accept", "Accept", new { id = Model.Id })
+            @Html.ActionLink("Accept", "Accept", new { id = Model.Id, action = "Accept" })
             <text> | </text>
-            @Html.ActionLink("Reject", "Reject", new { id = Model.Id })
+            @Html.ActionLink("Reject", "Reject", new { id = Model.Id, action = "Reject" })
             <text> | </text>
         }
         else if (Model.Status == CooperationRequestStatus.Accepted)

@@ -30,7 +30,6 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
     options.AddPolicy("ModifyTopics", policy => policy.RequireRole("Admin", "Teacher"));
     options.AddPolicy("ViewCooperationRequests", policy => policy.RequireRole("Teacher", "Student"));
-    options.AddPolicy("ModifyCooperationRequests", policy => policy.RequireRole("Teacher", "Student"));
 });
 
 builder.Services.AddControllersWithViews()
