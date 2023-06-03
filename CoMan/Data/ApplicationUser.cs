@@ -12,7 +12,7 @@ namespace CoMan.Data
         Admin
     }
 
-    public class ApplicationUser : IdentityUser
+    public class ApplicationUser : IdentityUser, IDeletableEntity
     {
         [Required]
         [MaxLength(256)]

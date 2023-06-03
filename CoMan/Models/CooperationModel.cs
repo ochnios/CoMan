@@ -13,7 +13,7 @@ namespace CoMan.Models
     }
 
     [Table("Cooperations")]
-    public class CooperationModel
+    public class CooperationModel : IDeletableEntity
     {
         [Key]
         public int Id { get; set; }

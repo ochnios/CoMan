@@ -14,7 +14,7 @@ namespace CoMan.Models
     }
 
     [Table("CooperationRequests")]
-    public class CooperationRequestModel
+    public class CooperationRequestModel : IDeletableEntity
     {
         [Key]
         public int Id { get; set; }

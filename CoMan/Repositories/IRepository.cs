@@ -1,17 +1,16 @@
-﻿using System.Linq.Expressions;
+﻿using CoMan.Models;
+using System.Linq.Expressions;
 
 namespace CoMan.Repositories
 {
-    public interface IRepository<TEntity> where TEntity : class
+    public interface IRepository<TEntity> where TEntity : IDeletableEntity
     {
-        ValueTask<TEntity> GetByIdAsync(int id);
-        ValueTask<TEntity> GetByIdAsync(string id);
+        Task<TEntity> GetByIdAsync(int id);
+        Task<TEntity> GetByIdAsync(string id);
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<dynamic> FindForDatatables(Expression<Func<TEntity, bool>> predicate, int start, int length, string member, bool ascending);
         Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
         Task AddAsync(TEntity entity);
-        Task AddRangeAsync(IEnumerable<TEntity> entities);
         void Remove(TEntity entity);
-        void RemoveRange(IEnumerable<TEntity> entities);
     }
 }

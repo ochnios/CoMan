@@ -2,10 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using CoMan.Data;
 using CoMan.Extensions;
+using CoMan.Models;
 
 namespace CoMan.Repositories
 {
-    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class
+    public class Repository<TEntity> : IRepository<TEntity> where TEntity : class, IDeletableEntity
     {
         protected readonly CoManDbContext Context = null!;
 
@@ -14,28 +15,42 @@ namespace CoMan.Repositories
             this.Context = context;
         }
 
-        public ValueTask<TEntity> GetByIdAsync(int id)
+        public async Task<TEntity> GetByIdAsync(int id)
         {
-            return Context.Set<TEntity>().FindAsync(id)!;
+            var foundEntity = await Context.Set<TEntity>().FindAsync(id);
+
+            if (foundEntity != null && foundEntity.Deleted != true)
+            {
+                return foundEntity;
+            }
+
+            return null;
         }
 
-        public ValueTask<TEntity> GetByIdAsync(string id)
+        public async Task<TEntity> GetByIdAsync(string id)
         {
-            return Context.Set<TEntity>().FindAsync(id)!;
+            var foundEntity = await Context.Set<TEntity>().FindAsync(id);
+
+            if (foundEntity != null && foundEntity.Deleted != true)
+            {
+                return foundEntity;
+            }
+
+            return null;
         }
 
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         {
-            return await Context.Set<TEntity>().ToListAsync();
+            return await GetActiveEntities().Where(e => !e.Deleted).ToListAsync();
         }
 
         public async Task<dynamic> FindForDatatables(Expression<Func<TEntity, bool>> predicate,
             int start, int length, string member, bool ascending)
         {
+            var activeEntities = GetActiveEntities();
 
-            var totalCount = await Context.Set<TEntity>().CountAsync();
-
-            var filtered = Context.Set<TEntity>().Where(predicate);
+            var totalCount = await activeEntities.CountAsync();
+            var filtered = activeEntities.Where(predicate);
             var filteredCount = await filtered.CountAsync();
 
             var results = await filtered.OrderByDynamic<TEntity>(member, ascending).Skip(start).Take(length).ToListAsync();
@@ -50,7 +65,7 @@ namespace CoMan.Repositories
 
         public Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate)
         {
-            return Context.Set<TEntity>().SingleOrDefaultAsync(predicate)!;
+            return GetActiveEntities().SingleOrDefaultAsync(predicate)!;
         }
 
         public async Task AddAsync(TEntity entity)
@@ -58,20 +73,14 @@ namespace CoMan.Repositories
             await Context.Set<TEntity>().AddAsync(entity);
         }
 
-        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
-        {
-            await Context.Set<TEntity>().AddRangeAsync(entities);
-        }
-
-
         public void Remove(TEntity entity)
         {
-            Context.Set<TEntity>().Remove(entity);
+            entity.Deleted = true;
         }
 
-        public void RemoveRange(IEnumerable<TEntity> entities)
+        private IQueryable<TEntity> GetActiveEntities()
         {
-            Context.Set<TEntity>().RemoveRange(entities);
+            return Context.Set<TEntity>().Where(e => !e.Deleted);
         }
     }
 }

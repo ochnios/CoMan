@@ -58,7 +58,7 @@
         }
         else if ((await AuthorizationService.AuthorizeAsync(User, "RequireTeacher")).Succeeded)
         {
-            var loggedUserId = HttpContextAccessor.HttpContext.User.GetLoggedInUserId();
+            var loggedUserId = HttpContextAccessor.HttpContext!.User.GetLoggedInUserId();
             if (loggedUserId.Equals(Model.Author.Id))
             {
                 displayMangementButtons = true;

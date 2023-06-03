@@ -13,7 +13,7 @@ namespace CoMan.Models
     }
 
     [Table("Topics")]
-    public class TopicModel
+    public class TopicModel : IDeletableEntity
     {
         [Key]
         public int Id { get; set; }
