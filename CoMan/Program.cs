@@ -45,6 +45,7 @@ builder.Services.AddTransient<ITopicService, TopicService>();
 builder.Services.AddTransient<ICooperationRequestService, CooperationRequestService>();
 builder.Services.AddTransient<ICooperationService, CooperationService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<ILogger, Logger<Program>>();
 
 // Register the Swagger generator, defining 1 or more Swagger documents
 builder.Services.AddSwaggerGen(c =>
@@ -96,15 +97,12 @@ app.MapRazorPages();
 using (var scope = app.Services.CreateScope())
 {
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var roles = Role.GetNames(typeof(Role));
+    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+    var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
 
-    foreach (string role in roles)
-    {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
-    }
+    var seeder = new DataSeeder(logger, roleManager, unitOfWork);
+    await seeder.SeedRoles(Role.GetNames(typeof(Role)));
+    await seeder.SeedTopicsFromJSON("Data/TopicsForSeeder.json");
 }
 
 app.Run();

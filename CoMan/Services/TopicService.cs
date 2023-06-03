@@ -11,7 +11,7 @@ namespace CoMan.Services
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
-        public TopicService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ILogger<TopicService> logger)
+        public TopicService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ILogger logger)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
