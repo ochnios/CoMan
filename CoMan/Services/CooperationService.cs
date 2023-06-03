@@ -98,7 +98,7 @@ namespace CoMan.Services
             newCooperation.Teacher = await GetCurrentTeacherUser();
             newCooperation.Topic = await _unitOfWork.Topics.SingleOrDefaultAsync(t => t.Id == topicId);
             newCooperation.Student = await _unitOfWork.Students.SingleOrDefaultAsync(s => s.Id.Equals(studentId));
-            newCooperation.CreationDate = System.DateTime.Now;
+            newCooperation.StartDate = System.DateTime.Now;
             newCooperation.Status = CooperationStatus.Active;
 
             await _unitOfWork.Cooperations.AddAsync(newCooperation);

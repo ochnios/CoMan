@@ -112,7 +112,7 @@ namespace CoMan.Services
                 throw new Exception("Cooperation request cannot be updated!");
             }
 
-            cooperationRequestToBeUpdated.ApplicantComment = updatedCooperationRequest.ApplicantComment;
+            cooperationRequestToBeUpdated.StudentComment = updatedCooperationRequest.StudentComment;
             await _unitOfWork.CommitAsync();
         }
 
@@ -139,7 +139,7 @@ namespace CoMan.Services
 
             cooperationRequestToBeRejected.Status = CooperationRequestStatus.Rejected;
             cooperationRequestToBeRejected.ConsiderationDate = System.DateTime.Now;
-            cooperationRequestToBeRejected.RecipentComment = rejectedCooperationRequest.RecipentComment;
+            cooperationRequestToBeRejected.TeacherComment = rejectedCooperationRequest.TeacherComment;
             await _unitOfWork.CommitAsync();
         }
 

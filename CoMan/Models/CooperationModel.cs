@@ -20,14 +20,14 @@ namespace CoMan.Models
 
         [Required]
         [DisplayName("Start date")]
-        public DateTime CreationDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         [Required]
         [DisplayName("Status")]
         public CooperationStatus Status { get; set; }
 
         [DisplayName("End date")]
-        public DateTime? ConsiderationDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [DisplayName("Comment")]
         public string? Comment { get; set; }

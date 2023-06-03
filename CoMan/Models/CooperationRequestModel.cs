@@ -31,10 +31,10 @@ namespace CoMan.Models
         public DateTime? ConsiderationDate { get; set; }
 
         [DisplayName("Student comment")]
-        public string? ApplicantComment { get; set; }
+        public string? StudentComment { get; set; }
 
         [DisplayName("Teacher comment")]
-        public string? RecipentComment { get; set; }
+        public string? TeacherComment { get; set; }
 
         [DisplayName("Topic")]
         public virtual TopicModel Topic { get; set; } = null!;
