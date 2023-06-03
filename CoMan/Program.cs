@@ -90,12 +90,6 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapControllerRoute(
-    name: "topics",
-    pattern: "{controller=Topic}/{action=Index}/{id?}");
-app.MapControllerRoute(
-    name: "cooperationRequests",
-    pattern: "{controller=CooperationRequest}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 

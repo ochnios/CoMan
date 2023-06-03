@@ -75,9 +75,9 @@ namespace CoMan.Services
                 resultsForDatatable.Add(new CooperationDatatable()
                 {
                     Id = item.Id,
-                    StartDate = item.CreationDate != null ? item.CreationDate.ToString("dd.MM.yyyy") : string.Empty,
+                    StartDate = item.StartDate != null ? item.StartDate.ToString("dd.MM.yyyy") : string.Empty,
                     Status = item.Status != null ? item.Status.ToString() : string.Empty,
-                    EndDate = item.ConsiderationDate != null ? item.ConsiderationDate.ToString("dd.MM.yyyy") : string.Empty,
+                    EndDate = item.EndDate != null ? item.EndDate.ToString("dd.MM.yyyy") : string.Empty,
                     Student = item.Student != null ? item.Student.FirstName + " " + item.Student.LastName : string.Empty,
                     Teacher = item.Teacher != null ? item.Teacher.FirstName + " " + item.Teacher.LastName : string.Empty,
                     Topic = item.Topic != null ? item.Topic.Title : string.Empty
@@ -95,6 +95,7 @@ namespace CoMan.Services
 
         public async Task<CooperationModel> CreateCooperation(CooperationModel newCooperation, int requestId, int topicId, string studentId)
         {
+            newCooperation.CooperationRequest = await _unitOfWork.CooperationRequests.SingleOrDefaultAsync(cr => cr.Id == requestId);
             newCooperation.Teacher = await GetCurrentTeacherUser();
             newCooperation.Topic = await _unitOfWork.Topics.SingleOrDefaultAsync(t => t.Id == topicId);
             newCooperation.Student = await _unitOfWork.Students.SingleOrDefaultAsync(s => s.Id.Equals(studentId));
