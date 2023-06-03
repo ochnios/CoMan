@@ -1,9 +1,8 @@
-﻿using CoMan.Models;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CoMan.Data
+namespace CoMan.Models
 {
     public enum Role
     {
@@ -28,6 +27,6 @@ namespace CoMan.Data
 
         public virtual ICollection<CooperationModel>? Cooperations { get; set; }
 
-        public Boolean Deleted { get; set; }
+        public bool Deleted { get; set; }
     }
 }

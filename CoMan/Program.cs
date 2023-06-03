@@ -1,4 +1,5 @@
 using CoMan.Data;
+using CoMan.Models;
 using CoMan.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

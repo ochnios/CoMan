@@ -1,5 +1,4 @@
-﻿using CoMan.Data;
-using CoMan.Models;
+﻿using CoMan.Models;
 using CoMan.Repositories;
 
 namespace CoMan.Repositories

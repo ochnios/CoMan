@@ -1,6 +1,4 @@
-﻿using CoMan.Models;
-
-namespace CoMan.Data
+﻿namespace CoMan.Models
 {
     public class TeacherUser : ApplicationUser
     {

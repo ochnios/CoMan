@@ -1,4 +1,4 @@
-﻿using CoMan.Data;
+﻿using CoMan.Models;
 using Microsoft.AspNetCore.Identity;
 
 namespace CoMan.Extensions
