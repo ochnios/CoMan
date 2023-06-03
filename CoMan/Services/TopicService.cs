@@ -28,9 +28,9 @@ namespace CoMan.Services
             TopicModel topic = await _unitOfWork.Topics
                 .GetByIdAsync(id);
 
-            if (await isUserAllowedToModify(topic))
+            if (await IsCurrentUserAllowedToModify(topic))
             {
-                if (await canBeModified(topic))
+                if (await CanBeModified(topic))
                 {
                     return topic;
                 }
@@ -107,7 +107,7 @@ namespace CoMan.Services
 
         public async Task<TopicModel> CreateTopic(TopicModel newTopic)
         {
-            var author = await getCurrentTeacherUser();
+            var author = await GetCurrentTeacherUser();
 
             newTopic.AddedDate = System.DateTime.Now;
             newTopic.Status = TopicStatus.Active;
@@ -121,8 +121,9 @@ namespace CoMan.Services
             return newTopic;
         }
 
-        public async Task UpdateTopic(TopicModel topicToBeUpdated, TopicModel updatedTopic)
+        public async Task UpdateTopic(int id, TopicModel updatedTopic)
         {
+            var topicToBeUpdated = await GetTopicForModificationById(id);
             topicToBeUpdated.Title = updatedTopic.Title;
             topicToBeUpdated.Description = updatedTopic.Description;
             topicToBeUpdated.StudentLimit = updatedTopic.StudentLimit;
@@ -131,13 +132,14 @@ namespace CoMan.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task DeleteTopic(TopicModel topicToBeDeleted)
+        public async Task DeleteTopic(int id)
         {
+            var topicToBeDeleted = await GetTopicForModificationById(id);
             _unitOfWork.Topics.Remove(topicToBeDeleted);
             await _unitOfWork.CommitAsync();
         }
 
-        private async Task<Boolean> isUserAllowedToModify(TopicModel topic)
+        private async Task<Boolean> IsCurrentUserAllowedToModify(TopicModel topic)
         {
             var isAdmin = await _userManager.IsCurrentUserInRole("Admin");
             var currentUserId = await _userManager.GetCurrentUserId();
@@ -145,18 +147,18 @@ namespace CoMan.Services
             return (isAdmin || currentUserId.Equals(topic.Author.Id));
         }
 
-        private async Task<Boolean> canBeModified(TopicModel topic)
+        private async Task<Boolean> CanBeModified(TopicModel topic)
         {
-            return !(await hasAnyRelatedEntities(topic));
+            return !(await HasAnyRelatedEntities(topic));
         }
 
-        private async Task<TeacherUser> getCurrentTeacherUser()
+        private async Task<TeacherUser> GetCurrentTeacherUser()
         {
             var currentUserId = await _userManager.GetCurrentUserId();
             return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUserId);
         }
 
-        private async Task<Boolean> hasAnyRelatedEntities(TopicModel topic)
+        private async Task<Boolean> HasAnyRelatedEntities(TopicModel topic)
         {
             var topicRepository = _unitOfWork.Topics;
             var foundTopic = await topicRepository.SingleOrDefaultAsync(

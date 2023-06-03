@@ -106,8 +106,7 @@ namespace CoMan.Controllers
         {
             try
             {
-                TopicModel topicToBeUpdated = await _topicService.GetTopicForModificationById(id);
-                await _topicService.UpdateTopic(topicToBeUpdated, updatedTopic);
+                await _topicService.UpdateTopic(id, updatedTopic);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
@@ -140,8 +139,7 @@ namespace CoMan.Controllers
         {
             try
             {
-                TopicModel topicToBeDeleted = await _topicService.GetTopicForModificationById(id);
-                await _topicService.DeleteTopic(topicToBeDeleted);
+                await _topicService.DeleteTopic(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)
