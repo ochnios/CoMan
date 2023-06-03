@@ -43,7 +43,7 @@ namespace CoMan.Controllers
             catch (Exception ex)
             {
                 return Json(
-                    new DtResult<TopicDatatable>
+                    new DtResult<CooperationRequestDatatable>
                     {
                         Error = ex.Message,
                     });
@@ -116,40 +116,6 @@ namespace CoMan.Controllers
             try
             {
                 await _cooperationRequestService.UpdateCooperationRequest(id, updatedCooperationRequest);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Error", "Home");
-            }
-        }
-
-
-        // GET: CooperationRequest/Accept/{id}
-        [Authorize(Policy = "RequireTeacher")]
-        public async Task<ActionResult> AcceptAsync(int id)
-        {
-            try
-            {
-                return View(await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id));
-            }
-            catch (Exception ex)
-            {
-                TempData["ErrorMessage"] = ex.Message;
-                return RedirectToAction("Error", "Home");
-            }
-        }
-
-        // POST: CooperationRequest/Accept/{id}
-        [Authorize(Policy = "RequireTeacher")]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> AcceptAsync(int id, CooperationRequestModel acceptedCooperationRequest)
-        {
-            try
-            {
-                await _cooperationRequestService.AcceptCooperationRequest(id, acceptedCooperationRequest);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

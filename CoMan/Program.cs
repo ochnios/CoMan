@@ -30,6 +30,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
     options.AddPolicy("ModifyTopics", policy => policy.RequireRole("Admin", "Teacher"));
     options.AddPolicy("ViewCooperationRequests", policy => policy.RequireRole("Teacher", "Student"));
+    options.AddPolicy("ViewCooperations", policy => policy.RequireRole("Teacher", "Student"));
 });
 
 builder.Services.AddControllersWithViews()
@@ -41,6 +42,7 @@ builder.Services.AddControllersWithViews()
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ITopicService, TopicService>();
 builder.Services.AddTransient<ICooperationRequestService, CooperationRequestService>();
+builder.Services.AddTransient<ICooperationService, CooperationService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
 // Register the Swagger generator, defining 1 or more Swagger documents

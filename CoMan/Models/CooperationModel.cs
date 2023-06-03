@@ -8,7 +8,8 @@ namespace CoMan.Models
     public enum CooperationStatus
     {
         Active,
-        Ended
+        Ended,
+        Archived
     }
 
     [Table("Cooperations")]

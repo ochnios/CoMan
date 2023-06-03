@@ -1,7 +1,6 @@
 ﻿using CoMan.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace CoMan.Data
 {
@@ -10,6 +9,8 @@ namespace CoMan.Data
         public DbSet<TeacherUser> TeacherUsers { get; set; } = null!;
         public DbSet<TopicModel> Topics { get; set; } = null!;
         public DbSet<CooperationRequestModel> CooperationRequests { get; set; } = null!;
+        public DbSet<CooperationModel> Cooperations { get; set; } = null!;
+
         public CoManDbContext(DbContextOptions<CoManDbContext> options)
             : base(options)
         {

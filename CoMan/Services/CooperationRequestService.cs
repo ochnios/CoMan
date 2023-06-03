@@ -116,7 +116,7 @@ namespace CoMan.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task AcceptCooperationRequest(int id, CooperationRequestModel acceptedCooperationRequest)
+        public async Task AcceptCooperationRequest(int id)
         {
             var cooperationRequestToBeAccepted = await GetCooperationRequestForCurrentUserById(id);
             if(!CanBeAccepted(cooperationRequestToBeAccepted))
@@ -126,7 +126,6 @@ namespace CoMan.Services
 
             cooperationRequestToBeAccepted.Status = CooperationRequestStatus.Accepted;
             cooperationRequestToBeAccepted.ConsiderationDate = System.DateTime.Now;
-            cooperationRequestToBeAccepted.RecipentComment = acceptedCooperationRequest.RecipentComment;
             await _unitOfWork.CommitAsync();
         }
 
