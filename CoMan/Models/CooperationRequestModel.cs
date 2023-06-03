@@ -48,5 +48,7 @@ namespace CoMan.Models
 
         [DisplayName("Cooperation")]
         public virtual CooperationModel? Cooperation { get; set; }
+
+        public Boolean Deleted { get; set; }
     }
 }

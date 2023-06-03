@@ -45,5 +45,7 @@ namespace CoMan.Models
         public virtual ICollection<CooperationRequestModel>? CooperationRequests { get; set; }
 
         public virtual ICollection<CooperationModel>? Cooperations { get; set; }
+
+        public Boolean Deleted { get; set; }
     }
 }
