@@ -27,7 +27,7 @@ namespace CoMan.Models
 
         [Required]
         [DisplayName("Title")]
-        [MaxLength(100)]
+        [MaxLength(200)]
         public string Title { get; set; } = null!;
 
         [Required]
