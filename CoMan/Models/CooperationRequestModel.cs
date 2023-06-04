@@ -1,5 +1,4 @@
-﻿using CoMan.Data;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,11 +8,12 @@ namespace CoMan.Models
     {
         Waiting,
         Accepted,
-        Rejected
+        Rejected,
+        Archived
     }
 
     [Table("CooperationRequests")]
-    public class CooperationRequestModel
+    public class CooperationRequestModel : IDeletableEntity
     {
         [Key]
         public int Id { get; set; }
@@ -30,10 +30,10 @@ namespace CoMan.Models
         public DateTime? ConsiderationDate { get; set; }
 
         [DisplayName("Student comment")]
-        public string? ApplicantComment { get; set; }
+        public string? StudentComment { get; set; }
 
         [DisplayName("Teacher comment")]
-        public string? RecipentComment { get; set; }
+        public string? TeacherComment { get; set; }
 
         [DisplayName("Topic")]
         public virtual TopicModel Topic { get; set; } = null!;
@@ -47,5 +47,7 @@ namespace CoMan.Models
 
         [DisplayName("Cooperation")]
         public virtual CooperationModel? Cooperation { get; set; }
+
+        public Boolean Deleted { get; set; }
     }
 }

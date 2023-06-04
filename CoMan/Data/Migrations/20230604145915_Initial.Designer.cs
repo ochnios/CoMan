@@ -4,16 +4,18 @@ using CoMan.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CoMan.Data.Migrations
+namespace CoMan.Migrations
 {
     [DbContext(typeof(CoManDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230604145915_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,7 +24,7 @@ namespace CoMan.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("CoMan.Data.ApplicationUser", b =>
+            modelBuilder.Entity("CoMan.Models.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -33,6 +35,9 @@ namespace CoMan.Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Discriminator")
                         .IsRequired()
@@ -114,17 +119,20 @@ namespace CoMan.Data.Migrations
                     b.Property<string>("Comment")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("ConsiderationDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<int?>("CooperationRequestId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreationDate")
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
                     b.Property<float?>("Mark")
                         .HasColumnType("real");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -144,9 +152,7 @@ namespace CoMan.Data.Migrations
                         .IsUnique()
                         .HasFilter("[CooperationRequestId] IS NOT NULL");
 
-                    b.HasIndex("StudentId")
-                        .IsUnique()
-                        .HasFilter("[StudentId] IS NOT NULL");
+                    b.HasIndex("StudentId");
 
                     b.HasIndex("TeacherId");
 
@@ -163,23 +169,26 @@ namespace CoMan.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("ApplicantComment")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<DateTime?>("ConsiderationDate")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("CreationDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("RecipentComment")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("StudentComment")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("StudentId")
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("TeacherComment")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("TeacherId")
                         .HasColumnType("nvarchar(450)");
@@ -189,9 +198,7 @@ namespace CoMan.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StudentId")
-                        .IsUnique()
-                        .HasFilter("[StudentId] IS NOT NULL");
+                    b.HasIndex("StudentId");
 
                     b.HasIndex("TeacherId");
 
@@ -215,6 +222,9 @@ namespace CoMan.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool>("Deleted")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
@@ -224,13 +234,19 @@ namespace CoMan.Data.Migrations
                     b.Property<int>("StudentLimit")
                         .HasColumnType("int");
 
+                    b.Property<string>("StudentUserId")
+                        .HasColumnType("nvarchar(450)");
+
                     b.Property<string>("Title")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AuthorId");
+
+                    b.HasIndex("StudentUserId");
 
                     b.ToTable("Topics");
                 });
@@ -372,16 +388,16 @@ namespace CoMan.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CoMan.Data.StudentUser", b =>
+            modelBuilder.Entity("CoMan.Models.StudentUser", b =>
                 {
-                    b.HasBaseType("CoMan.Data.ApplicationUser");
+                    b.HasBaseType("CoMan.Models.ApplicationUser");
 
                     b.HasDiscriminator().HasValue("StudentUser");
                 });
 
-            modelBuilder.Entity("CoMan.Data.TeacherUser", b =>
+            modelBuilder.Entity("CoMan.Models.TeacherUser", b =>
                 {
-                    b.HasBaseType("CoMan.Data.ApplicationUser");
+                    b.HasBaseType("CoMan.Models.ApplicationUser");
 
                     b.Property<int>("MaxCooperations")
                         .HasColumnType("int");
@@ -395,11 +411,11 @@ namespace CoMan.Data.Migrations
                         .WithOne("Cooperation")
                         .HasForeignKey("CoMan.Models.CooperationModel", "CooperationRequestId");
 
-                    b.HasOne("CoMan.Data.StudentUser", "Student")
-                        .WithOne("Cooperation")
-                        .HasForeignKey("CoMan.Models.CooperationModel", "StudentId");
+                    b.HasOne("CoMan.Models.StudentUser", "Student")
+                        .WithMany("Cooperations")
+                        .HasForeignKey("StudentId");
 
-                    b.HasOne("CoMan.Data.TeacherUser", "Teacher")
+                    b.HasOne("CoMan.Models.TeacherUser", "Teacher")
                         .WithMany("Cooperations")
                         .HasForeignKey("TeacherId");
 
@@ -418,11 +434,11 @@ namespace CoMan.Data.Migrations
 
             modelBuilder.Entity("CoMan.Models.CooperationRequestModel", b =>
                 {
-                    b.HasOne("CoMan.Data.StudentUser", "Student")
-                        .WithOne("CooperationRequest")
-                        .HasForeignKey("CoMan.Models.CooperationRequestModel", "StudentId");
+                    b.HasOne("CoMan.Models.StudentUser", "Student")
+                        .WithMany("CooperationsRequests")
+                        .HasForeignKey("StudentId");
 
-                    b.HasOne("CoMan.Data.TeacherUser", "Teacher")
+                    b.HasOne("CoMan.Models.TeacherUser", "Teacher")
                         .WithMany("CooperationsRequests")
                         .HasForeignKey("TeacherId");
 
@@ -441,11 +457,15 @@ namespace CoMan.Data.Migrations
 
             modelBuilder.Entity("CoMan.Models.TopicModel", b =>
                 {
-                    b.HasOne("CoMan.Data.TeacherUser", "Author")
+                    b.HasOne("CoMan.Models.TeacherUser", "Author")
                         .WithMany("Topics")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("CoMan.Models.StudentUser", null)
+                        .WithMany("Topics")
+                        .HasForeignKey("StudentUserId");
 
                     b.Navigation("Author");
                 });
@@ -461,7 +481,7 @@ namespace CoMan.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("CoMan.Data.ApplicationUser", null)
+                    b.HasOne("CoMan.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -470,7 +490,7 @@ namespace CoMan.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("CoMan.Data.ApplicationUser", null)
+                    b.HasOne("CoMan.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -485,7 +505,7 @@ namespace CoMan.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CoMan.Data.ApplicationUser", null)
+                    b.HasOne("CoMan.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -494,7 +514,7 @@ namespace CoMan.Data.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("CoMan.Data.ApplicationUser", null)
+                    b.HasOne("CoMan.Models.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -513,14 +533,16 @@ namespace CoMan.Data.Migrations
                     b.Navigation("Cooperations");
                 });
 
-            modelBuilder.Entity("CoMan.Data.StudentUser", b =>
+            modelBuilder.Entity("CoMan.Models.StudentUser", b =>
                 {
-                    b.Navigation("Cooperation");
+                    b.Navigation("Cooperations");
 
-                    b.Navigation("CooperationRequest");
+                    b.Navigation("CooperationsRequests");
+
+                    b.Navigation("Topics");
                 });
 
-            modelBuilder.Entity("CoMan.Data.TeacherUser", b =>
+            modelBuilder.Entity("CoMan.Models.TeacherUser", b =>
                 {
                     b.Navigation("Cooperations");
 

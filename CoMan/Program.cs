@@ -1,4 +1,5 @@
 using CoMan.Data;
+using CoMan.Models;
 using CoMan.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -28,6 +29,9 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireStudent", policy => policy.RequireRole("Student"));
     options.AddPolicy("RequireTeacher", policy => policy.RequireRole("Teacher"));
     options.AddPolicy("RequireAdmin", policy => policy.RequireRole("Admin"));
+    options.AddPolicy("ModifyTopics", policy => policy.RequireRole("Admin", "Teacher"));
+    options.AddPolicy("ViewCooperationRequests", policy => policy.RequireRole("Teacher", "Student"));
+    options.AddPolicy("ViewCooperations", policy => policy.RequireRole("Teacher", "Student"));
 });
 
 builder.Services.AddControllersWithViews()
@@ -39,7 +43,9 @@ builder.Services.AddControllersWithViews()
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddTransient<ITopicService, TopicService>();
 builder.Services.AddTransient<ICooperationRequestService, CooperationRequestService>();
+builder.Services.AddTransient<ICooperationService, CooperationService>();
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<ILogger, Logger<Program>>();
 
 // Register the Swagger generator, defining 1 or more Swagger documents
 builder.Services.AddSwaggerGen(c =>
@@ -85,26 +91,23 @@ app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-app.MapControllerRoute(
-    name: "topics",
-    pattern: "{controller=Topic}/{action=Index}/{id?}");
-app.MapControllerRoute(
-    name: "cooperationRequests",
-    pattern: "{controller=CooperationRequest}/{action=Index}/{id?}");
 
 app.MapRazorPages();
 
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var roles = Role.GetNames(typeof(Role));
-
-    foreach (string role in roles)
+    using (var scope = app.Services.CreateScope())
     {
-        if (!await roleManager.RoleExistsAsync(role))
-        {
-            await roleManager.CreateAsync(new IdentityRole(role));
-        }
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+        var seeder = new DataSeeder(logger, unitOfWork, userManager, roleManager);
+
+        await seeder.SeedRoles(Role.GetNames(typeof(Role)));
+        await seeder.SeedUsersFromJSON("Data/SeederData/Users.json"); // Remember that admin is also created here
+        await seeder.SeedTopicsFromJSON("Data/SeederData/Topics.json");
     }
 }
 

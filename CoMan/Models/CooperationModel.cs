@@ -1,5 +1,4 @@
-﻿using CoMan.Data;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -8,25 +7,26 @@ namespace CoMan.Models
     public enum CooperationStatus
     {
         Active,
-        Ended
+        Ended,
+        Archived
     }
 
     [Table("Cooperations")]
-    public class CooperationModel
+    public class CooperationModel : IDeletableEntity
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
         [DisplayName("Start date")]
-        public DateTime CreationDate { get; set; }
+        public DateTime StartDate { get; set; }
 
         [Required]
         [DisplayName("Status")]
         public CooperationStatus Status { get; set; }
 
         [DisplayName("End date")]
-        public DateTime? ConsiderationDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         [DisplayName("Comment")]
         public string? Comment { get; set; }
@@ -47,5 +47,7 @@ namespace CoMan.Models
 
         [DisplayName("Teacher")]
         public virtual TeacherUser? Teacher { get; set; }
+
+        public Boolean Deleted { get; set; }
     }
 }

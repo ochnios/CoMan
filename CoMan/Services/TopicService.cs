@@ -1,10 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoMan.Models;
+﻿using CoMan.Models;
 using CoMan.Data;
 using Microsoft.AspNetCore.Identity;
-using NuGet.Protocol;
-using System.Linq.Expressions;
+using CoMan.Models.AuxiliaryModels;
+using CoMan.Extensions;
 
 namespace CoMan.Services
 {
@@ -13,7 +11,7 @@ namespace CoMan.Services
         private readonly ILogger _logger;
         private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
-        public TopicService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ILogger<TopicService> logger)
+        public TopicService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager, ILogger logger)
         {
             _logger = logger;
             _unitOfWork = unitOfWork;
@@ -25,6 +23,28 @@ namespace CoMan.Services
             return await _unitOfWork.Topics
                 .GetByIdAsync(id);
         }
+        public async Task<TopicModel> GetTopicForModificationById(int id)
+        {
+            TopicModel topic = await _unitOfWork.Topics
+                .GetByIdAsync(id);
+
+            if (await IsCurrentUserAllowedToModify(topic))
+            {
+                if (await CanBeModified(topic))
+                {
+                    return topic;
+                }
+                else
+                {
+                    throw new Exception("You can not edit the topic which is related to any cooperation or cooperation request!");
+                }
+            }
+            else
+            {
+                throw new Exception("You are not alllowed to modify others users topics!");
+            }
+        }
+
 
         public async Task<IEnumerable<TopicModel>> GetAllTopics()
         {
@@ -32,17 +52,62 @@ namespace CoMan.Services
                 .GetAllAsync();
         }
 
-        public async Task<IEnumerable<TopicModel>> FindForDatables(string searchBy)
+        public async Task<dynamic> FindForDatables(DtParameters dtParameters)
         {
-            var result = await _unitOfWork.Topics
-                .Find(r => r.Title != null);
+            if (dtParameters == null)
+            {
+                throw new ArgumentNullException(nameof(dtParameters));
+            }
 
-            return result;
+            var searchParams = dtParameters.Search ?? new DtSearch();
+            var searchBy = dtParameters.Search!.Value ?? string.Empty;
+            searchBy = searchBy.ToUpper();
+
+            // if we have an empty search then just order the results by Id ascending
+            var orderCriteria = "Id";
+            var orderAscendingDirection = true;
+
+            if (dtParameters.Order != null)
+            {
+                // sort on the 1st column
+                orderCriteria = dtParameters.Columns![dtParameters.Order[0].Column].Data ?? string.Empty;
+                orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
+            }
+
+            var rawResults = await _unitOfWork.Topics
+                .FindForDatatables((r => r.Title.ToUpper().Contains(searchBy) ||
+                           r.Description != null && r.Description.ToUpper().Contains(searchBy) ||
+                           r.Author.FirstName.ToUpper().Contains(searchBy) ||
+                           r.Author.LastName.ToUpper().Contains(searchBy)),
+                           dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
+                );
+
+            List<TopicDatatable> resultsForDatatable = new();
+            foreach (var item in rawResults.Results)
+            {
+                resultsForDatatable.Add(new TopicDatatable()
+                {
+                    Id = item.Id,
+                    AddedDate = item.AddedDate.ToString("dd.MM.yyyy"),
+                    Status = item.Status.ToString(),
+                    Title = item.Title,
+                    StudentLimit = item.StudentLimit,
+                    AuthorId = item.Author.Id,
+                    AuthorName = item.Author.FirstName + " " + item.Author.LastName,
+                });
+            }
+
+            return new
+            {
+                ResultsForTable = resultsForDatatable,
+                TotalCount = rawResults.TotalCount,
+                FilteredCount = rawResults.FilteredCount
+            };
         }
 
         public async Task<TopicModel> CreateTopic(TopicModel newTopic)
         {
-            var author = await GetCurrentUser();
+            var author = await GetCurrentTeacherUser();
 
             newTopic.AddedDate = System.DateTime.Now;
             newTopic.Status = TopicStatus.Active;
@@ -56,27 +121,49 @@ namespace CoMan.Services
             return newTopic;
         }
 
-        public async Task UpdateTopic(TopicModel TopicToBeUpdated, TopicModel Topic)
+        public async Task UpdateTopic(int id, TopicModel updatedTopic)
         {
-            TopicToBeUpdated.Title = Topic.Title;
-            TopicToBeUpdated.Description = Topic.Description;
-            TopicToBeUpdated.StudentLimit = Topic.StudentLimit;
-            TopicToBeUpdated.Status = Topic.Status;
+            var topicToBeUpdated = await GetTopicForModificationById(id);
+            topicToBeUpdated.Title = updatedTopic.Title;
+            topicToBeUpdated.Description = updatedTopic.Description;
+            topicToBeUpdated.StudentLimit = updatedTopic.StudentLimit;
+            topicToBeUpdated.Status = updatedTopic.Status;
 
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task DeleteTopic(TopicModel Topic)
+        public async Task DeleteTopic(int id)
         {
-            _unitOfWork.Topics.Remove(Topic);
+            var topicToBeDeleted = await GetTopicForModificationById(id);
+            _unitOfWork.Topics.Remove(topicToBeDeleted);
             await _unitOfWork.CommitAsync();
         }
-        private async Task<TeacherUser> GetCurrentUser()
+
+        private async Task<Boolean> IsCurrentUserAllowedToModify(TopicModel topic)
         {
-            TeacherService teacherService = new TeacherService(_unitOfWork, _userManager);
-            var httpContext = new HttpContextAccessor().HttpContext;
-            var currentUser = await _userManager.GetUserAsync(httpContext.User);
-            return await teacherService.GetTeacherById(currentUser.Id);
+            var isAdmin = await _userManager.IsCurrentUserInRole("Admin");
+            var currentUserId = await _userManager.GetCurrentUserId();
+
+            return (isAdmin || currentUserId.Equals(topic.Author.Id));
+        }
+
+        private async Task<Boolean> CanBeModified(TopicModel topic)
+        {
+            return !(await HasAnyRelatedEntities(topic));
+        }
+
+        private async Task<TeacherUser> GetCurrentTeacherUser()
+        {
+            var currentUserId = await _userManager.GetCurrentUserId();
+            return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUserId);
+        }
+
+        private async Task<Boolean> HasAnyRelatedEntities(TopicModel topic)
+        {
+            var topicRepository = _unitOfWork.Topics;
+            var foundTopic = await topicRepository.SingleOrDefaultAsync(
+                t => t.Id == topic.Id && (t.CooperationRequests!.Any() || t.Cooperations!.Any()));
+            return foundTopic != null;
         }
     }
 }

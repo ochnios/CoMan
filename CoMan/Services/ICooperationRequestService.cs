@@ -1,13 +1,17 @@
 ﻿using CoMan.Models;
+using CoMan.Models.AuxiliaryModels;
 
 namespace CoMan.Services
 {
     public interface ICooperationRequestService
     {
-        Task<IEnumerable<CooperationRequestModel>> GetAllCooperationRequests();
-        Task<CooperationRequestModel> GetCooperationRequestById(int id);
-        Task<CooperationRequestModel> CreateCooperationRequest(CooperationRequestModel newCooperationRequest);
-        Task UpdateCooperationRequest(CooperationRequestModel CooperationRequestToBeUpdated, CooperationRequestModel CooperationRequest);
-        Task DeleteCooperationRequest(CooperationRequestModel CooperationRequest);
+        Task<dynamic> FindDatablesForCurrentUser(DtParameters dtParameters);
+        Task<CooperationRequestModel> GetCooperationRequestForCurrentUserById(int id);
+        Task<CooperationRequestModel> CreateCooperationRequest(CooperationRequestModel newCooperationRequest, int topicId, string teacherId);
+        Task UpdateCooperationRequest(int id, CooperationRequestModel updatedCooperationRequest);
+        Task AcceptCooperationRequest(int id);
+        Task RejectCooperationRequest(int id, CooperationRequestModel rejectedCooperationRequest);
+        Task ArchiveCooperationRequest(int id);
+        Task DeleteCooperationRequest(int id);
     }
 }

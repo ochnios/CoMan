@@ -1,4 +1,5 @@
 ﻿using CoMan.Models;
+using CoMan.Models.AuxiliaryModels;
 using System.Security.Cryptography;
 
 namespace CoMan.Services
@@ -6,10 +7,11 @@ namespace CoMan.Services
     public interface ITopicService
     {
         Task<TopicModel> GetTopicById(int id);
+        Task<TopicModel> GetTopicForModificationById(int id);
         Task<IEnumerable<TopicModel>> GetAllTopics();
-        Task<IEnumerable<TopicModel>> FindForDatables(string searchBy);
+        Task<dynamic> FindForDatables(DtParameters dtParameters);
         Task<TopicModel> CreateTopic(TopicModel newTopic);
-        Task UpdateTopic(TopicModel TopicToBeUpdated, TopicModel Topic);
-        Task DeleteTopic(TopicModel Topic);
+        Task UpdateTopic(int id, TopicModel updatedTopic);
+        Task DeleteTopic(int id);
     }
 }

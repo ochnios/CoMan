@@ -9,12 +9,10 @@ namespace CoMan.Services
     public class TeacherService : ITeacherService
     {
         private readonly IUnitOfWork _unitOfWork;
-        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TeacherService(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
+        public TeacherService(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _userManager = userManager;
         }
 
         public async Task<TeacherUser> GetTeacherById(string id)

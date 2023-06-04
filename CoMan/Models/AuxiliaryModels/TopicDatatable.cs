@@ -1,14 +1,12 @@
-﻿using System.ComponentModel;
-
-namespace CoMan.Models.AuxiliaryModels
+﻿namespace CoMan.Models.AuxiliaryModels
 {
-    public class TopicTable
+    public class TopicDatatable
     {
         public int Id { get; set; }
 
-        public DateTime AddedDate { get; set; }
+        public string AddedDate { get; set; } = null!;
 
-        public TopicStatus Status { get; set; }
+        public string Status { get; set; } = null!;
 
         public string Title { get; set; } = null!;
 

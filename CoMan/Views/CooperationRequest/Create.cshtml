@@ -4,34 +4,21 @@
     ViewData["Title"] = "Create cooperation request";
 }
 
-<h1>Create</h1>
+<h1>Apply</h1>
 
-<h4>Create cooperation request</h4>
+<h4>Send cooperation request</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <label asp-for="Student" class="control-label"></label>
-                <input asp-for="Student" class="form-control" />
-                <span asp-validation-for="Student" class="text-danger"></span>
+                <label asp-for="StudentComment" class="control-label"></label>
+                <textarea asp-for="StudentComment" class="form-control"></textarea>
+                <span asp-validation-for="StudentComment" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="Teacher" class="control-label"></label>
-                <input asp-for="Teacher" class="form-control" />
-                <span asp-validation-for="Teacher" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ApplicantComment" class="control-label"></label>
-                <input asp-for="ApplicantComment" class="form-control" />
-                <span asp-validation-for="ApplicantComment" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RecipentComment" class="control-label"></label>
-                <input asp-for="RecipentComment" class="form-control" />
-                <span asp-validation-for="RecipentComment" class="text-danger"></span>
-            </div>
+            <input type="number" name="topicId" value="@ViewBag.TopicId" hidden />
+            <input type="text" name="teacherId" value="@ViewBag.TeacherId" hidden />
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -40,9 +27,11 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-controller="Topic" >Back to list</a>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

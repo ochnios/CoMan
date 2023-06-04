@@ -1,5 +1,4 @@
-﻿using CoMan.Data;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,7 +12,7 @@ namespace CoMan.Models
     }
 
     [Table("Topics")]
-    public class TopicModel
+    public class TopicModel : IDeletableEntity
     {
         [Key]
         public int Id { get; set; }
@@ -28,6 +27,7 @@ namespace CoMan.Models
 
         [Required]
         [DisplayName("Title")]
+        [MaxLength(200)]
         public string Title { get; set; } = null!;
 
         [Required]
@@ -44,5 +44,7 @@ namespace CoMan.Models
         public virtual ICollection<CooperationRequestModel>? CooperationRequests { get; set; }
 
         public virtual ICollection<CooperationModel>? Cooperations { get; set; }
+
+        public Boolean Deleted { get; set; }
     }
 }
