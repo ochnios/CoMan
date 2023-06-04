@@ -8,10 +8,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CoMan.Data.Migrations
+namespace CoMan.Migrations
 {
     [DbContext(typeof(CoManDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    partial class CoManDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -156,7 +156,7 @@ namespace CoMan.Data.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("Cooperations");
+                    b.ToTable("Cooperations", (string)null);
                 });
 
             modelBuilder.Entity("CoMan.Models.CooperationRequestModel", b =>
@@ -202,7 +202,7 @@ namespace CoMan.Data.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("CooperationRequests");
+                    b.ToTable("CooperationRequests", (string)null);
                 });
 
             modelBuilder.Entity("CoMan.Models.TopicModel", b =>
@@ -246,7 +246,7 @@ namespace CoMan.Data.Migrations
 
                     b.HasIndex("StudentUserId");
 
-                    b.ToTable("Topics");
+                    b.ToTable("Topics", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
