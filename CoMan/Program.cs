@@ -94,15 +94,21 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
-using (var scope = app.Services.CreateScope())
+if (app.Environment.IsDevelopment())
 {
-    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-    var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
-    var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+    using (var scope = app.Services.CreateScope())
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger>();
+        var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    var seeder = new DataSeeder(logger, roleManager, unitOfWork);
-    await seeder.SeedRoles(Role.GetNames(typeof(Role)));
-    await seeder.SeedTopicsFromJSON("Data/TopicsForSeeder.json");
+        var seeder = new DataSeeder(logger, unitOfWork, userManager, roleManager);
+
+        await seeder.SeedRoles(Role.GetNames(typeof(Role)));
+        await seeder.SeedUsersFromJSON("Data/SeederData/Users.json"); // Remember that admin is also created here
+        await seeder.SeedTopicsFromJSON("Data/SeederData/Topics.json");
+    }
 }
 
 app.Run();

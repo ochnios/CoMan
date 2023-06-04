@@ -1,0 +1,7 @@
+[{"firstName":"Admin","lastName":"Admin","email":"admin@example.com","password":"H@rdP@ssword1","role":"Admin"},
+ {"firstName":"John","lastName":"Student","email":"john.student@example.com","password":"H@rdP@ssword1","role":"Student"},
+ {"firstName":"Jesse","lastName":"Student","email":"jesse.student@example.com","password":"H@rdP@ssword1","role":"Student"},
+ {"firstName":"Jane","lastName":"Student","email":"jane.student@example.com","password":"H@rdP@ssword1","role":"Student"},
+ {"firstName":"Walter","lastName":"Teacher","email":"walter.teacher@example.com","password":"H@rdP@ssword1","role":"Teacher"},
+ {"firstName":"Werner","lastName":"Teacher","email":"werner.teacher@example.com","password":"H@rdP@ssword1","role":"Teacher"},
+ {"firstName":"Lydia","lastName":"Teacher","email":"lydia.teacher@example.com","password":"H@rdP@ssword1","role":"Teacher"}]
