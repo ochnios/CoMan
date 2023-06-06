@@ -1,22 +1,22 @@
-﻿@model CoMan.Models.CooperationRequestModel
+﻿@model CoMan.Models.CooperationModel
 
 @{
-    ViewData["Title"] = "Reject cooperation request";
+    ViewData["Title"] = "End cooperation";
 }
 
-<h1>Reject</h1>
+<h1>End</h1>
 
-<h4>Reject cooperation request</h4>
+<h4>End cooperation</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Reject">
+        <form asp-action="End">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
-                <label asp-for="TeacherComment" class="control-label"></label>
-                <textarea asp-for="TeacherComment" class="form-control"></textarea>
-                <span asp-validation-for="TeacherComment" class="text-danger"></span>
+                <label asp-for="Mark" class="control-label"></label>
+                <input asp-for="Mark" class="form-control" />
+                <span asp-validation-for="Mark" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label for="topic" class="control-label">Topic</label>
@@ -27,11 +27,7 @@
                 <input type="text" id="student" value="@ViewBag.StudentEmail" class="form-control" readonly />
             </div>
             <div class="form-group">
-                <label for="studentComment" class="control-label">Student comment</label>
-                <input type="text" id="studentComment" value="@ViewBag.StudentComment" class="form-control" readonly />
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Reject" class="btn btn-primary" />
+                <input type="submit" value="End" class="btn btn-primary" />
             </div>
         </form>
     </div>

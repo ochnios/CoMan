@@ -67,13 +67,14 @@ namespace CoMan.Controllers
 
         [Authorize(Policy = "RequireTeacher")]
         // GET: Cooperation/Create
-        public ActionResult Create(int requestId, int topicId, string studentId, string topic, string student)
+        public ActionResult Create(int requestId, int topicId, string studentId, string topicTitle, string studentEmail, string studentComment)
         {
             ViewBag.RequestId = requestId;
             ViewBag.TopicId = topicId;
             ViewBag.StudentId = studentId;
-            ViewBag.Topic = topic;
-            ViewBag.Student = student;
+            ViewBag.TopicTitle = topicTitle;
+            ViewBag.StudentEmail = studentEmail;
+            ViewBag.StudentComment = studentComment;
             return View(new CooperationModel());
         }
 
@@ -135,6 +136,9 @@ namespace CoMan.Controllers
         {
             try
             {
+                CooperationModel cooperation = await _cooperationService.GetCooperationForCurrentUserById(id);
+                ViewBag.TopicTitle = cooperation.Topic!.Title;
+                ViewBag.StudentEmail = cooperation.Student!.Email;
                 return View(await _cooperationService.GetCooperationForCurrentUserById(id));
             }
             catch (Exception ex)
@@ -152,7 +156,7 @@ namespace CoMan.Controllers
         {
             try
             {
-                await _cooperationService.EndCooperation(id);
+                await _cooperationService.EndCooperation(id, endedCooperation);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

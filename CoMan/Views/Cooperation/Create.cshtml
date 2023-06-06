@@ -17,8 +17,18 @@
                 <input asp-for="Comment" class="form-control" />
                 <span asp-validation-for="Comment" class="text-danger"></span>
             </div>
-            <input type="text" id="Topic" value="@ViewBag.Topic" class="form-control" readonly />
-            <input type="text" id="Topic" value="@ViewBag.Student" class="form-control" readonly />
+            <div class="form-group">
+                <label for="topic" class="control-label">Topic</label>
+                <input type="text" id="topic" value="@ViewBag.TopicTitle" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label for="student" class="control-label">Student</label>
+                <input type="text" id="student" value="@ViewBag.StudentEmail" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label for="studentComment" class="control-label">Student comment</label>
+                <input type="text" id="studentComment" value="@ViewBag.StudentComment" class="form-control" readonly />
+            </div>
             <input type="number" name="requestId" value="@ViewBag.RequestId" hidden />
             <input type="number" name="topicId" value="@ViewBag.TopicId" hidden />
             <input type="text" name="studentId" value="@ViewBag.StudentId" hidden />

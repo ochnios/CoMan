@@ -31,6 +31,7 @@ namespace CoMan.Models
         [DisplayName("Comment")]
         public string? Comment { get; set; }
 
+        [RegularExpression(@"^[2345](\.[25])?$", ErrorMessage = "The value must be a correct mark!")]
         [DisplayName("Mark")]
         public float? Mark { get; set; }
 

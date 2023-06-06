@@ -10,6 +10,6 @@ namespace CoMan.Services
         Task<CooperationModel> CreateCooperation(CooperationModel newCooperation, int requestId, int topicId, string teacherId);
         Task UpdateCooperation(int id, CooperationModel updatedCooperation);
         Task ArchiveCooperation(int id);
-        Task EndCooperation(int id);
+        Task EndCooperation(int id, CooperationModel endedCooperation);
     }
 }

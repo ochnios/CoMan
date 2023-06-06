@@ -67,10 +67,12 @@ namespace CoMan.Controllers
 
         [Authorize(Policy = "RequireStudent")]
         // GET: CooperationRequest/Create
-        public ActionResult Create(int topicId, string teacherId)
+        public ActionResult Create(int topicId, string teacherId, string teacherEmail, string topicTitle)
         {
             ViewBag.TopicId = topicId;
             ViewBag.TeacherId = teacherId;
+            ViewBag.TeacherEmail = teacherEmail;
+            ViewBag.TopicTitle = topicTitle;
             return View(new CooperationRequestModel());
         }
 
@@ -131,7 +133,12 @@ namespace CoMan.Controllers
         {
             try
             {
-                return View(await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id));
+                CooperationRequestModel cooperationRequest = await _cooperationRequestService.GetCooperationRequestForCurrentUserById(id);
+                ViewBag.StudentEmail = cooperationRequest.Student!.Email;
+                ViewBag.TopicTitle = cooperationRequest.Topic!.Title;
+                ViewBag.StudentEmail = cooperationRequest.Student.Email;
+                ViewBag.StudentComment = cooperationRequest.StudentComment;
+                return View(cooperationRequest);
             }
             catch (Exception ex)
             {

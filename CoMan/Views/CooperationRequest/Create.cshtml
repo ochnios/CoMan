@@ -17,6 +17,14 @@
                 <textarea asp-for="StudentComment" class="form-control"></textarea>
                 <span asp-validation-for="StudentComment" class="text-danger"></span>
             </div>
+             <div class="form-group">
+                <label for="topic" class="control-label">Topic</label>
+                <input type="text" id="topic" value="@ViewBag.TopicTitle" class="form-control" readonly />
+            </div>
+            <div class="form-group">
+                <label for="student" class="control-label">Teacher</label>
+                <input type="text" id="teacher" value="@ViewBag.TeacherEmail" class="form-control" readonly />
+            </div>
             <input type="number" name="topicId" value="@ViewBag.TopicId" hidden />
             <input type="text" name="teacherId" value="@ViewBag.TeacherId" hidden />
             <div class="form-group">

@@ -1,4 +1,6 @@
 ﻿@model CoMan.Models.CooperationModel
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "Details of cooperation";
@@ -43,6 +45,21 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    
+    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireTeacher")).Succeeded)
+    {
+        @if (Model.Status == CooperationStatus.Active)
+        {
+            @Html.ActionLink("Edit", "Edit", new { id = Model.Id })
+            <text> | </text>
+            @Html.ActionLink("End", "End", new { id = Model.Id })
+            <text> | </text>
+        }
+        @if (Model.Status == CooperationStatus.Ended)
+        {
+            @Html.ActionLink("Archive", "Archive", new { id = Model.Id })
+            <text> | </text>
+        }
+    }
     <a asp-action="Index">Back to List</a>
 </div>

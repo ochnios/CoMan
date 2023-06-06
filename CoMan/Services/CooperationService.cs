@@ -113,12 +113,13 @@ namespace CoMan.Services
         {
             var cooperationToBeUpdated = await GetCooperationForCurrentUserById(id);
 
-            // TODO updates on fields that can be updated
+            cooperationToBeUpdated.Mark = updatedCooperation.Mark;
+            cooperationToBeUpdated.Comment = updatedCooperation.Comment;
 
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task EndCooperation(int id)
+        public async Task EndCooperation(int id, CooperationModel cooperationModel)
         {
             var cooperationToBeEnded = await GetCooperationForCurrentUserById(id);
             if (!CanBeEnded(cooperationToBeEnded))
@@ -127,6 +128,7 @@ namespace CoMan.Services
             }
 
             cooperationToBeEnded.Status = CooperationStatus.Ended;
+            cooperationToBeEnded.EndDate = System.DateTime.Now;
             await _unitOfWork.CommitAsync();
         }
 

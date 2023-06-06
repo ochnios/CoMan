@@ -48,7 +48,7 @@
         </dd>
     </dl>
 </div>
-<div>
+<div> 
     @{
         var displayMangementButtons = false;
 
@@ -74,9 +74,15 @@
         <text> | </text>
     }
 
-    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireStudent")).Succeeded)
+    @if ((await AuthorizationService.AuthorizeAsync(User, "RequireStudent")).Succeeded
+            && Model.Status == TopicStatus.Active)
     {
-        @Html.ActionLink("Apply","Create", "CooperationRequest", new { topicId = Model.Id, teacherId = Model.Author.Id }, null)
+        @Html.ActionLink("Apply","Create", "CooperationRequest", new { 
+            topicId = Model.Id, 
+            teacherId = Model.Author.Id, 
+            teacherEmail = Model.Author.Email, 
+            topicTitle = Model.Title 
+        }, null)
         <text> | </text>
     }
     <a asp-action="Index">Back to List</a>
