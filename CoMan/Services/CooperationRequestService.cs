@@ -75,8 +75,9 @@ namespace CoMan.Services
                     Status = item.Status != null ? item.Status.ToString() : string.Empty,
                     ConsiderationDate = item.ConsiderationDate != null ? item.ConsiderationDate.ToString("dd.MM.yyyy") : string.Empty,
                     Student = item.Student != null ? item.Student.FirstName + " " + item.Student.LastName : string.Empty,
-                    Teacher = item.Teacher != null ? item.Teacher.FirstName + " " + item.Teacher.LastName : string.Empty
-                });
+                    Teacher = item.Teacher != null ? item.Teacher.FirstName + " " + item.Teacher.LastName : string.Empty,
+                    Topic = item.Topic != null ? item.Topic.Title : string.Empty
+            });
             }
 
             return new

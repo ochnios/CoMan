@@ -13,5 +13,7 @@
         public string? Student { get; set; }
 
         public string? Teacher { get; set; }
+
+        public string? Topic { get; set; }
     }
 }

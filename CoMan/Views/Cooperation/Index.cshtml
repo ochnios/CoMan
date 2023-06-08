@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<CoMan.Models.CooperationModel>
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "Your cooperations";
@@ -12,8 +14,20 @@
             <th>@Html.DisplayNameFor(model => model.StartDate)</th>
             <th>@Html.DisplayNameFor(model => model.Status)</th>
             <th>@Html.DisplayNameFor(model => model.EndDate)</th>
-            <th>@Html.DisplayNameFor(model => model.Student)</th>
-            <th>@Html.DisplayNameFor(model => model.Teacher)</th>
+            @{
+                string userToShow = "none";
+                @if ((await AuthorizationService.AuthorizeAsync(User, "RequireTeacher")).Succeeded)
+                {
+                    <th>@Html.DisplayNameFor(model => model.Student)</th>
+                    userToShow = "student";
+
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, "RequireStudent")).Succeeded)
+                {
+                    <th>@Html.DisplayNameFor(model => model.Teacher)</th>
+                    userToShow = "teacher";
+                }
+            }
             <th>@Html.DisplayNameFor(model => model.Topic)</th>
             <th></th>
         </tr>
@@ -53,8 +67,7 @@
                     { data: "startDate" },
                     { data: "status" },
                     { data: "endDate" },
-                    { data: "student" },
-                    { data: "teacher" },
+                    { data: "@userToShow" },
                     { data: "topic" }
                 ],
                 // Column Definitions
@@ -62,7 +75,7 @@
                     { targets: "no-sort", orderable: false },
                     { targets: "no-search", searchable: false },
                     {
-                        targets: 6,
+                        targets: 5,
                         data: null,
                         defaultContent: "<a class='btn btn-link' role='button' href='#'>Details</a>",
                         render: function (data, type, row, meta) {

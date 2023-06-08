@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<CoMan.Models.CooperationRequestModel>
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "Cooperation requests";
@@ -12,8 +14,21 @@
             <th>@Html.DisplayNameFor(model => model.CreationDate)</th>
             <th>@Html.DisplayNameFor(model => model.Status)</th>
             <th>@Html.DisplayNameFor(model => model.ConsiderationDate)</th>
-            <th>@Html.DisplayNameFor(model => model.Student)</th>
-            <th>@Html.DisplayNameFor(model => model.Teacher)</th>
+            @{
+                string userToShow = "none";
+                @if((await AuthorizationService.AuthorizeAsync(User, "RequireTeacher")).Succeeded)
+                {
+                    <th>@Html.DisplayNameFor(model => model.Student)</th>
+                    userToShow = "student";
+
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, "RequireStudent")).Succeeded)
+                {
+                    <th>@Html.DisplayNameFor(model => model.Teacher)</th>
+                    userToShow = "teacher";
+                }
+            }
+            <th>@Html.DisplayNameFor(model => model.Topic)</th>
             <th></th>
         </tr>
     </thead>
@@ -52,8 +67,8 @@
                     { data: "creationDate" },
                     { data: "status" },
                     { data: "considerationDate" },
-                    { data: "student" },
-                    { data: "teacher" }
+                    { data: "@userToShow" },
+                    { data: "topic" }
                 ],
                 // Column Definitions
                 columnDefs: [
