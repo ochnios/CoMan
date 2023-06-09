@@ -3,9 +3,7 @@ using CoMan.Models;
 using CoMan.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
-using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Host.ConfigureLogging(logging =>
@@ -50,7 +48,7 @@ builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<ILogger, Logger<Program>>();
 
 // Register the Swagger generator, defining 1 or more Swagger documents
-builder.Services.AddSwaggerGen(c =>
+/*builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "CoMan", Version = "v1" });
     c.ResolveConflictingActions(apiDescriptions => apiDescriptions.FirstOrDefault());
@@ -58,7 +56,7 @@ builder.Services.AddSwaggerGen(c =>
     //var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     //var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
     //c.IncludeXmlComments(xmlPath);
-});
+});*/
 
 var app = builder.Build();
 
@@ -78,12 +76,12 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 // Enable middleware to serve generated Swagger as a JSON endpoint.
-app.UseSwagger();
+/*app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.RoutePrefix = "docs";
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "CoMan Docs v1");
-});
+});*/
 
 app.UseRouting();
 

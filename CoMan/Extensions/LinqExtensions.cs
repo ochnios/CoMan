@@ -22,33 +22,5 @@ namespace CoMan.Extensions
 
             return queryable;
         }
-
-        public static IQueryable<T> WhereDynamic<T>(
-            this IQueryable<T> sourceList, string query)
-        {
-
-            if (string.IsNullOrEmpty(query))
-            {
-                return sourceList;
-            }
-
-            try
-            {
-
-                var properties = typeof(T).GetProperties()
-                    .Where(x => x.CanRead && x.CanWrite && !x.GetGetMethod()!.IsVirtual);
-
-                //Expression
-                sourceList = sourceList.Where(c =>
-                    properties.Any(p => p.GetValue(c) != null && p.GetValue(c)!.ToString()!
-                        .Contains(query, StringComparison.InvariantCultureIgnoreCase)));
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-
-            return sourceList;
-        }
     }
 }

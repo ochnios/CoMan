@@ -3,7 +3,6 @@ using CoMan.Data;
 using Microsoft.AspNetCore.Identity;
 using CoMan.Models.AuxiliaryModels;
 using CoMan.Extensions;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 
 namespace CoMan.Services
 {

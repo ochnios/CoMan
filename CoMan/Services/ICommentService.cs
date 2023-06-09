@@ -1,6 +1,5 @@
 ﻿using CoMan.Models;
 using CoMan.Models.AuxiliaryModels;
-using System.Collections;
 
 namespace CoMan.Services
 {

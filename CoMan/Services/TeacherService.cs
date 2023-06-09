@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using CoMan.Models;
+﻿using CoMan.Models;
 using CoMan.Data;
-using Microsoft.AspNetCore.Identity;
 
 namespace CoMan.Services
 {

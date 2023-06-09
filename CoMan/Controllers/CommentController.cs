@@ -16,7 +16,7 @@ namespace CoMan.Controllers
             _commentService = commentService;
         }
 
-        // POST: /LoadTopicTable
+        // POST: /LoadCommentsTable
         [Authorize(Policy = "CommentCooperations")]
         [HttpPost("LoadCommentsTable")]
         public async Task<IActionResult> LoadTopicTable([FromBody] DtParameters dtParameters)
@@ -42,7 +42,7 @@ namespace CoMan.Controllers
             }
         }
 
-        // POST: Topic/Create
+        // POST: /AddComment
         [Authorize(Policy = "CommentCooperations")]
         [HttpPost("AddComment")]
         public async Task<ActionResult> CreateAsync(string comment, int cooperationId)

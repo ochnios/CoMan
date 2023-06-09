@@ -1,5 +1,4 @@
 ﻿using CoMan.Models;
-using CoMan.Repositories;
 using System.Linq.Expressions;
 
 namespace CoMan.Repositories

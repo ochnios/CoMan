@@ -25,7 +25,7 @@ namespace CoMan.Extensions
             return await getCurrentUser(userManager);
         }
 
-        public static async Task<ApplicationUser> getCurrentUser(UserManager<ApplicationUser> userManager)
+        private static async Task<ApplicationUser> getCurrentUser(UserManager<ApplicationUser> userManager)
         {
             if (_contextAccessor == null)
                 throw new NullReferenceException(nameof(_contextAccessor));
