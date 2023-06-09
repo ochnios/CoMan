@@ -46,6 +46,7 @@ namespace CoMan.Services
             // if we have an empty search then just order the results by Id ascending
             var orderCriteria = "Id";
             var orderAscendingDirection = true;
+            var includeArchived = false;
 
             if (dtParameters.Order != null)
             {
@@ -54,15 +55,24 @@ namespace CoMan.Services
                 orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
             }
 
+            if (dtParameters.IncludeArchived != null)
+            {
+                includeArchived = dtParameters.IncludeArchived == "true";
+            }
+
             var currentUserId = await _userManager.GetCurrentUserId();
 
             var rawResults = await _unitOfWork.CooperationRequests
-                .FindForDatatables((r => (currentUserId.Equals(r.Teacher!.Id) || currentUserId.Equals(r.Student!.Id)) &&
-                           (r.Teacher.FirstName.ToUpper().Contains(searchBy) ||
-                           r.Teacher.LastName.ToUpper().Contains(searchBy) ||
-                           r.Student!.FirstName.ToUpper().Contains(searchBy) ||
-                           r.Student!.LastName.ToUpper().Contains(searchBy))),
-                           dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
+                .FindForDatatables((r => 
+                            (includeArchived || r.Status != CooperationRequestStatus.Archived) &&
+                            (
+                                r.Topic!.Title.ToUpper().Contains(searchBy) ||
+                                r.Teacher!.FirstName.ToUpper().Contains(searchBy) ||
+                                r.Teacher!.LastName.ToUpper().Contains(searchBy) ||
+                                r.Student!.FirstName.ToUpper().Contains(searchBy) ||
+                                r.Student!.LastName.ToUpper().Contains(searchBy)
+                            )),
+                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection, currentUserId
                 );
 
             List<CooperationRequestDatatable> resultsForDatatable = new();
@@ -71,12 +81,13 @@ namespace CoMan.Services
                 resultsForDatatable.Add(new CooperationRequestDatatable()
                 {
                     Id = item.Id,
-                    CreationDate = item.CreationDate != null ? item.CreationDate.ToString("dd.MM.yyyy") : string.Empty,
+                    CreationDate = item.CreationDate != null ? item.CreationDate.ToString("dd.MM.yyyy HH:mm") : string.Empty,
                     Status = item.Status != null ? item.Status.ToString() : string.Empty,
-                    ConsiderationDate = item.ConsiderationDate != null ? item.ConsiderationDate.ToString("dd.MM.yyyy") : string.Empty,
+                    ConsiderationDate = item.ConsiderationDate != null ? item.ConsiderationDate.ToString("dd.MM.yyyy HH:mm") : string.Empty,
                     Student = item.Student != null ? item.Student.FirstName + " " + item.Student.LastName : string.Empty,
-                    Teacher = item.Teacher != null ? item.Teacher.FirstName + " " + item.Teacher.LastName : string.Empty
-                });
+                    Teacher = item.Teacher != null ? item.Teacher.FirstName + " " + item.Teacher.LastName : string.Empty,
+                    Topic = item.Topic != null ? item.Topic.Title : string.Empty
+            });
             }
 
             return new
@@ -192,7 +203,8 @@ namespace CoMan.Services
 
         private Boolean CanBeArchived(CooperationRequestModel cooperationRequest)
         {
-            return cooperationRequest.Status == CooperationRequestStatus.Accepted;
+            return cooperationRequest.Status == CooperationRequestStatus.Accepted ||
+                    cooperationRequest.Status == CooperationRequestStatus.Rejected;
         }
 
         private Boolean CanBeAccepted(CooperationRequestModel cooperationRequest)

@@ -8,6 +8,7 @@ namespace CoMan.Repositories
         Task<TEntity> GetByIdAsync(int id);
         Task<TEntity> GetByIdAsync(string id);
         Task<IEnumerable<TEntity>> GetAllAsync();
+        Task<IEnumerable<TEntity>> GetFilteredAsync(Expression<Func<TEntity, bool>> predicate);
         Task<dynamic> FindForDatatables(Expression<Func<TEntity, bool>> predicate, int start, int length, string member, bool ascending);
         Task<TEntity> SingleOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
         Task AddAsync(TEntity entity);

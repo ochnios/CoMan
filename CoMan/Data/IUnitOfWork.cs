@@ -9,6 +9,7 @@ namespace CoMan.Data
         ITopicRepository Topics { get; }
         ICooperationRequestRepository CooperationRequests { get; }
         ICooperationRepository Cooperations { get; }
+        ICommentRepository Comments { get; }
         Task<int> CommitAsync();
     }
 }

@@ -66,6 +66,8 @@ namespace CoMan.Services
             // if we have an empty search then just order the results by Id ascending
             var orderCriteria = "Id";
             var orderAscendingDirection = true;
+            var includeArchived = false;
+            var onlyMine = false;
 
             if (dtParameters.Order != null)
             {
@@ -74,12 +76,29 @@ namespace CoMan.Services
                 orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
             }
 
+            if (dtParameters.IncludeArchived != null)
+            {
+                includeArchived = dtParameters.IncludeArchived == "true";
+            }
+
+            if (dtParameters.OnlyMine != null)
+            {
+                onlyMine = dtParameters.OnlyMine == "true";
+            }
+
+             var currentUserId = await _userManager.GetCurrentUserId();
+
             var rawResults = await _unitOfWork.Topics
-                .FindForDatatables((r => r.Title.ToUpper().Contains(searchBy) ||
-                           r.Description != null && r.Description.ToUpper().Contains(searchBy) ||
-                           r.Author.FirstName.ToUpper().Contains(searchBy) ||
-                           r.Author.LastName.ToUpper().Contains(searchBy)),
-                           dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
+                .FindForDatatables((r => 
+                            (!onlyMine || r.Author.Id == currentUserId) &&
+                            (includeArchived || r.Status != TopicStatus.Archived) && 
+                            (
+                                r.Title.ToUpper().Contains(searchBy) ||
+                                r.Description != null && r.Description.ToUpper().Contains(searchBy) ||
+                                r.Author.FirstName.ToUpper().Contains(searchBy) ||
+                                r.Author.LastName.ToUpper().Contains(searchBy)
+                            )),
+                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
                 );
 
             List<TopicDatatable> resultsForDatatable = new();
@@ -132,11 +151,30 @@ namespace CoMan.Services
             await _unitOfWork.CommitAsync();
         }
 
+        public async Task ArchiveTopic(int id)
+        {
+            var topicToBeArchived= await GetTopicForModificationById(id);
+            topicToBeArchived.Status = TopicStatus.Archived;
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task ActivateTopic(int id)
+        {
+            var topicToBeArchived = await GetTopicForModificationById(id);
+            topicToBeArchived.Status = TopicStatus.Active;
+            await _unitOfWork.CommitAsync();
+        }
+
         public async Task DeleteTopic(int id)
         {
             var topicToBeDeleted = await GetTopicForModificationById(id);
             _unitOfWork.Topics.Remove(topicToBeDeleted);
             await _unitOfWork.CommitAsync();
+        }
+
+        public async Task<int> GetCountOfAcceptedRequests(int id) {
+            var topic = await _unitOfWork.Topics.GetByIdAsync(id);
+            return topic.CooperationRequests!.Count(c => c.Status == CooperationRequestStatus.Accepted);
         }
 
         private async Task<Boolean> IsCurrentUserAllowedToModify(TopicModel topic)

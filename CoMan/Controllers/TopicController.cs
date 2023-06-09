@@ -56,6 +56,7 @@ namespace CoMan.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> DetailsAsync(int id)
         {
+            ViewBag.AcceptedRequestsCount = await _topicService.GetCountOfAcceptedRequests(id);
             return View(await _topicService.GetTopicById(id));
         }
 
@@ -107,6 +108,72 @@ namespace CoMan.Controllers
             try
             {
                 await _topicService.UpdateTopic(id, updatedTopic);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // GET: Topic/Delete/{id}
+        [Authorize(Policy = "ModifyTopics")]
+        public async Task<ActionResult> ActivateAsync(int id)
+        {
+            try
+            {
+                return View(await _topicService.GetTopicForModificationById(id));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // POST: Topic/Delete/{id}
+        [Authorize(Policy = "ModifyTopics")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ActivateAsync(int id, TopicModel activatedTopic)
+        {
+            try
+            {
+                await _topicService.ActivateTopic(id);
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // GET: Topic/Delete/{id}
+        [Authorize(Policy = "ModifyTopics")]
+        public async Task<ActionResult> ArchiveAsync(int id)
+        {
+            try
+            {
+                return View(await _topicService.GetTopicForModificationById(id));
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = ex.Message;
+                return RedirectToAction("Error", "Home");
+            }
+        }
+
+        // POST: Topic/Delete/{id}
+        [Authorize(Policy = "ModifyTopics")]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<ActionResult> ArchiveAsync(int id, TopicModel archivedTopic)
+        {
+            try
+            {
+                await _topicService.ArchiveTopic(id);
                 return RedirectToAction(nameof(Index));
             }
             catch (Exception ex)

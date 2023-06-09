@@ -1,4 +1,6 @@
 ﻿@model IEnumerable<CoMan.Models.CooperationRequestModel>
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
     ViewData["Title"] = "Cooperation requests";
@@ -12,8 +14,21 @@
             <th>@Html.DisplayNameFor(model => model.CreationDate)</th>
             <th>@Html.DisplayNameFor(model => model.Status)</th>
             <th>@Html.DisplayNameFor(model => model.ConsiderationDate)</th>
-            <th>@Html.DisplayNameFor(model => model.Student)</th>
-            <th>@Html.DisplayNameFor(model => model.Teacher)</th>
+            @{
+                string userToShow = "none";
+                @if((await AuthorizationService.AuthorizeAsync(User, "RequireTeacher")).Succeeded)
+                {
+                    <th>@Html.DisplayNameFor(model => model.Student)</th>
+                    userToShow = "student";
+
+                }
+                @if ((await AuthorizationService.AuthorizeAsync(User, "RequireStudent")).Succeeded)
+                {
+                    <th>@Html.DisplayNameFor(model => model.Teacher)</th>
+                    userToShow = "teacher";
+                }
+            }
+            <th>@Html.DisplayNameFor(model => model.Topic)</th>
             <th></th>
         </tr>
     </thead>
@@ -24,6 +39,7 @@
     <script src="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.js" asp-append-version="true"></script>
     <script asp-append-version="true">
         var table;
+        var includeArchived = false;
 
         $(document).ready(function () {
             table = $("#cooperation-requests-table").DataTable({
@@ -36,7 +52,7 @@
                 // Paging Setups
                 paging: true,
                 // Searching Setups
-                searching: { regex: true },
+                searching: { regex: false },
                 // Ajax Filter
                 ajax: {
                     url: "/LoadCooperationRequestTable",
@@ -44,6 +60,7 @@
                     contentType: "application/json",
                     dataType: "json",
                     data: function (d) {
+                        d.includeArchived = includeArchived;
                         return JSON.stringify(d);
                     }
                 },
@@ -52,14 +69,15 @@
                     { data: "creationDate" },
                     { data: "status" },
                     { data: "considerationDate" },
-                    { data: "student" },
-                    { data: "teacher" }
+                    { data: "@userToShow" },
+                    { data: "topic" }
                 ],
                 // Column Definitions
                 columnDefs: [
                     { targets: "no-sort", orderable: false },
                     { targets: "no-search", searchable: false },
-                    { targets: 1, orderable: false },
+                    { targets: 3, orderable: false },
+                    { targets: 4, width: "50%" },
                     {
                         targets: 5,
                         data: null,
@@ -70,6 +88,24 @@
                         orderable: false
                     }
                 ]
+            });
+
+            // Add the "include archived" button
+            var searchContainer = $('.dataTables_length');
+            var buttonHtml = '&nbsp;<a id="toggleArchivedButton" href="#">include archived</a>';
+            searchContainer.append(buttonHtml);
+
+            // Event listener for the "include archived" button click
+            $("#toggleArchivedButton").on("click", function () {
+                var button = $(this);
+                if (includeArchived) {
+                    button.text("inlcude archived");
+                    includeArchived = false;
+                } else {
+                    button.text("exclude archived");
+                    includeArchived = true;
+                }
+                table.ajax.reload();
             });
         });
     </script>

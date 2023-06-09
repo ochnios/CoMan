@@ -39,11 +39,13 @@
     <script src="https://cdn.datatables.net/v/bs5/dt-1.13.4/datatables.min.js" asp-append-version="true"></script>
     <script asp-append-version="true">
         var table;
+        var includeArchived = false;
+        var onlyMine = false;
 
         $(document).ready(function () {
             table = $("#topics-table").DataTable({
                 // Design Assets
-                stateSave: true,
+                stateSave: false,
                 autoWidth: true,
                 // ServerSide Setups
                 processing: true,
@@ -51,7 +53,7 @@
                 // Paging Setups
                 paging: true,
                 // Searching Setups
-                searching: { regex: true },
+                searching: { regex: false },
                 // Ajax Filter
                 ajax: {
                     url: "/LoadTopicTable",
@@ -59,6 +61,8 @@
                     contentType: "application/json",
                     dataType: "json",
                     data: function (d) {
+                        d.includeArchived = includeArchived;
+                        d.onlyMine = onlyMine;
                         return JSON.stringify(d);
                     }
                 },
@@ -110,6 +114,47 @@
                     }
                 ]
             });
+            
+            // Add the "include archived" button
+            var searchContainer = $('.dataTables_length');
+            var buttonHtml = '&nbsp;<a id="toggleArchivedButton" href="#">include archived</a>';
+            searchContainer.append(buttonHtml);
+
+            // Event listener for the "include archived" button click
+            $("#toggleArchivedButton").on("click", function() {
+                var button = $(this);
+                if (includeArchived) {
+                    button.text("inlcude archived");
+                    includeArchived = false;
+                } else {
+                    button.text("exclude archived");
+                    includeArchived = true;
+                }
+                table.ajax.reload();
+            });
+
+            @if ((await AuthorizationService.AuthorizeAsync(User, "RequireTeacher")).Succeeded)
+            {   
+                <text>
+                // Add the "only mine" button
+                var searchContainer = $('.dataTables_length');
+                var buttonHtml = '&nbsp;|&nbsp;<a id="toggleMineButton" href="#">only mine</a>';
+                searchContainer.append(buttonHtml);
+
+                // Event listener for the "onlyMine" button click
+                $("#toggleMineButton").on("click", function() {
+                    var button = $(this);
+                    if (onlyMine) {
+                        button.text("only mine");
+                        onlyMine = false;
+                    } else {
+                        button.text("all");
+                        onlyMine = true;
+                    }
+                    table.ajax.reload();
+                });
+                </text>
+            }
         });
     </script>
 }

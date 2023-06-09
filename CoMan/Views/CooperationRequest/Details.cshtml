@@ -81,14 +81,15 @@
                 requestId = Model.Id,
                 topicId = Model.Topic.Id,
                 studentId = Model.Student!.Id,
-                topic = Model.Topic.Title,
-                student = Model.Student!.FirstName + " " + Model.Student.LastName
+                topicTitle = Model.Topic.Title,
+                studentEmail = Model.Student!.Email,
+                studentComment = Model.StudentComment
                 }, null)
             <text> | </text>
             @Html.ActionLink("Reject", "Reject", new { id = Model.Id, action = "Reject" })
             <text> | </text>
         }
-        else if (Model.Status == CooperationRequestStatus.Accepted)
+        else if (Model.Status == CooperationRequestStatus.Accepted || Model.Status == CooperationRequestStatus.Rejected)
         {
             @Html.ActionLink("Archive", "Archive", new { id = Model.Id })
             <text> | </text>

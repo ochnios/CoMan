@@ -48,6 +48,7 @@ namespace CoMan.Services
             // if we have an empty search then just order the results by Id ascending
             var orderCriteria = "Id";
             var orderAscendingDirection = true;
+            var includeArchived = false;
 
             if (dtParameters.Order != null)
             {
@@ -56,17 +57,24 @@ namespace CoMan.Services
                 orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
             }
 
+            if (dtParameters.IncludeArchived != null)
+            {
+                includeArchived = dtParameters.IncludeArchived == "true";
+            }
+
             var currentUserId = await _userManager.GetCurrentUserId();
 
             var rawResults = await _unitOfWork.Cooperations
-                .FindForDatatables((r => (currentUserId.Equals(r.Teacher!.Id) || currentUserId.Equals(r.Student!.Id)) &&
-                           (r.Teacher.FirstName.ToUpper().Contains(searchBy) ||
-                           r.Teacher.LastName.ToUpper().Contains(searchBy) ||
-                           r.Student!.FirstName.ToUpper().Contains(searchBy) ||
-                           r.Student!.LastName.ToUpper().Contains(searchBy) ||
-                           r.Topic!.Title.ToUpper().Contains(searchBy)
-                           )),
-                           dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
+                .FindForDatatables((r => 
+                            (includeArchived || r.Status != CooperationStatus.Archived) &&
+                            (
+                                r.Topic!.Title.ToUpper().Contains(searchBy) ||
+                                r.Teacher!.FirstName.ToUpper().Contains(searchBy) ||
+                                r.Teacher!.LastName.ToUpper().Contains(searchBy) ||
+                                r.Student!.FirstName.ToUpper().Contains(searchBy) ||
+                                r.Student!.LastName.ToUpper().Contains(searchBy)
+                            )),
+                           dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection, currentUserId
                 );
 
             List<CooperationDatatable> resultsForDatatable = new();
@@ -75,9 +83,9 @@ namespace CoMan.Services
                 resultsForDatatable.Add(new CooperationDatatable()
                 {
                     Id = item.Id,
-                    StartDate = item.StartDate != null ? item.StartDate.ToString("dd.MM.yyyy") : string.Empty,
+                    StartDate = item.StartDate != null ? item.StartDate.ToString("dd.MM.yyyy HH:mm") : string.Empty,
                     Status = item.Status != null ? item.Status.ToString() : string.Empty,
-                    EndDate = item.EndDate != null ? item.EndDate.ToString("dd.MM.yyyy") : string.Empty,
+                    EndDate = item.EndDate != null ? item.EndDate.ToString("dd.MM.yyyy HH:mm") : string.Empty,
                     Student = item.Student != null ? item.Student.FirstName + " " + item.Student.LastName : string.Empty,
                     Teacher = item.Teacher != null ? item.Teacher.FirstName + " " + item.Teacher.LastName : string.Empty,
                     Topic = item.Topic != null ? item.Topic.Title : string.Empty
@@ -112,13 +120,18 @@ namespace CoMan.Services
         public async Task UpdateCooperation(int id, CooperationModel updatedCooperation)
         {
             var cooperationToBeUpdated = await GetCooperationForCurrentUserById(id);
+            if (!CanBeUpdated(cooperationToBeUpdated))
+            {
+                throw new Exception("Cooperation cannot be deleted!");
+            }
 
-            // TODO updates on fields that can be updated
+            cooperationToBeUpdated.Mark = updatedCooperation.Mark;
+            cooperationToBeUpdated.Comment = updatedCooperation.Comment;
 
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task EndCooperation(int id)
+        public async Task EndCooperation(int id, CooperationModel endedCooperation)
         {
             var cooperationToBeEnded = await GetCooperationForCurrentUserById(id);
             if (!CanBeEnded(cooperationToBeEnded))
@@ -127,6 +140,8 @@ namespace CoMan.Services
             }
 
             cooperationToBeEnded.Status = CooperationStatus.Ended;
+            cooperationToBeEnded.Mark = endedCooperation.Mark;
+            cooperationToBeEnded.EndDate = System.DateTime.Now;
             await _unitOfWork.CommitAsync();
         }
 
@@ -162,6 +177,10 @@ namespace CoMan.Services
             return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUser.Id);
         }
 
+        private Boolean CanBeUpdated(CooperationModel cooperation)
+        {
+            return cooperation.Status == CooperationStatus.Active;
+        }
         private Boolean CanBeEnded(CooperationModel cooperation)
         {
             return cooperation.Status == CooperationStatus.Active;
