@@ -172,6 +172,11 @@ namespace CoMan.Services
             await _unitOfWork.CommitAsync();
         }
 
+        public async Task<int> GetCountOfAcceptedRequests(int id) {
+            var topic = await _unitOfWork.Topics.GetByIdAsync(id);
+            return topic.CooperationRequests!.Count(c => c.Status == CooperationRequestStatus.Accepted);
+        }
+
         private async Task<Boolean> IsCurrentUserAllowedToModify(TopicModel topic)
         {
             var isAdmin = await _userManager.IsCurrentUserInRole("Admin");

@@ -56,6 +56,7 @@ namespace CoMan.Controllers
         [AllowAnonymous]
         public async Task<ActionResult> DetailsAsync(int id)
         {
+            ViewBag.AcceptedRequestsCount = await _topicService.GetCountOfAcceptedRequests(id);
             return View(await _topicService.GetTopicById(id));
         }
 
