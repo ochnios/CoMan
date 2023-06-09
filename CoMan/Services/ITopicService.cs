@@ -12,6 +12,8 @@ namespace CoMan.Services
         Task<dynamic> FindForDatables(DtParameters dtParameters);
         Task<TopicModel> CreateTopic(TopicModel newTopic);
         Task UpdateTopic(int id, TopicModel updatedTopic);
+        Task ActivateTopic(int id);
+        Task ArchiveTopic(int id);
         Task DeleteTopic(int id);
     }
 }

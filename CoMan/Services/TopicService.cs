@@ -142,6 +142,20 @@ namespace CoMan.Services
             await _unitOfWork.CommitAsync();
         }
 
+        public async Task ArchiveTopic(int id)
+        {
+            var topicToBeArchived= await GetTopicForModificationById(id);
+            topicToBeArchived.Status = TopicStatus.Archived;
+            await _unitOfWork.CommitAsync();
+        }
+
+        public async Task ActivateTopic(int id)
+        {
+            var topicToBeArchived = await GetTopicForModificationById(id);
+            topicToBeArchived.Status = TopicStatus.Active;
+            await _unitOfWork.CommitAsync();
+        }
+
         public async Task DeleteTopic(int id)
         {
             var topicToBeDeleted = await GetTopicForModificationById(id);
