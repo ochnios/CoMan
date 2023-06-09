@@ -64,16 +64,15 @@ namespace CoMan.Services
 
             var rawResults = await _unitOfWork.CooperationRequests
                 .FindForDatatables((r => 
-                            (currentUserId.Equals(r.Teacher!.Id) || currentUserId.Equals(r.Student!.Id)) &&
                             (includeArchived || r.Status != CooperationRequestStatus.Archived) &&
                             (
                                 r.Topic!.Title.ToUpper().Contains(searchBy) ||
-                                r.Teacher.FirstName.ToUpper().Contains(searchBy) ||
-                                r.Teacher.LastName.ToUpper().Contains(searchBy) ||
+                                r.Teacher!.FirstName.ToUpper().Contains(searchBy) ||
+                                r.Teacher!.LastName.ToUpper().Contains(searchBy) ||
                                 r.Student!.FirstName.ToUpper().Contains(searchBy) ||
                                 r.Student!.LastName.ToUpper().Contains(searchBy)
                             )),
-                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
+                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection, currentUserId
                 );
 
             List<CooperationRequestDatatable> resultsForDatatable = new();

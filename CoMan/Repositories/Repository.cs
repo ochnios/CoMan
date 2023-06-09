@@ -78,7 +78,7 @@ namespace CoMan.Repositories
             entity.Deleted = true;
         }
 
-        private IQueryable<TEntity> GetActiveEntities()
+        protected IQueryable<TEntity> GetActiveEntities()
         {
             return Context.Set<TEntity>().Where(e => !e.Deleted);
         }
