@@ -1,6 +1,5 @@
 ﻿using CoMan.Models;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
 
 namespace CoMan.Data

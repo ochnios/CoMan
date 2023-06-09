@@ -120,6 +120,10 @@ namespace CoMan.Services
         public async Task UpdateCooperation(int id, CooperationModel updatedCooperation)
         {
             var cooperationToBeUpdated = await GetCooperationForCurrentUserById(id);
+            if (!CanBeUpdated(cooperationToBeUpdated))
+            {
+                throw new Exception("Cooperation cannot be deleted!");
+            }
 
             cooperationToBeUpdated.Mark = updatedCooperation.Mark;
             cooperationToBeUpdated.Comment = updatedCooperation.Comment;
@@ -127,7 +131,7 @@ namespace CoMan.Services
             await _unitOfWork.CommitAsync();
         }
 
-        public async Task EndCooperation(int id, CooperationModel cooperationModel)
+        public async Task EndCooperation(int id, CooperationModel endedCooperation)
         {
             var cooperationToBeEnded = await GetCooperationForCurrentUserById(id);
             if (!CanBeEnded(cooperationToBeEnded))
@@ -136,6 +140,7 @@ namespace CoMan.Services
             }
 
             cooperationToBeEnded.Status = CooperationStatus.Ended;
+            cooperationToBeEnded.Mark = endedCooperation.Mark;
             cooperationToBeEnded.EndDate = System.DateTime.Now;
             await _unitOfWork.CommitAsync();
         }
@@ -172,6 +177,10 @@ namespace CoMan.Services
             return await _unitOfWork.Teachers.SingleOrDefaultAsync(t => t.Id == currentUser.Id);
         }
 
+        private Boolean CanBeUpdated(CooperationModel cooperation)
+        {
+            return cooperation.Status == CooperationStatus.Active;
+        }
         private Boolean CanBeEnded(CooperationModel cooperation)
         {
             return cooperation.Status == CooperationStatus.Active;

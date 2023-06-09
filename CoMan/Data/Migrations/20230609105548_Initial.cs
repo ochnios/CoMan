@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace CoMan.Migrations
+namespace CoMan.Data.Migrations
 {
     public partial class Initial : Migration
     {
@@ -237,7 +237,7 @@ namespace CoMan.Migrations
                     Status = table.Column<int>(type: "int", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Comment = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Mark = table.Column<float>(type: "real", nullable: true),
+                    Mark = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     TopicId = table.Column<int>(type: "int", nullable: true),
                     CooperationRequestId = table.Column<int>(type: "int", nullable: true),
                     StudentId = table.Column<string>(type: "nvarchar(450)", nullable: true),

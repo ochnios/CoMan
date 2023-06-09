@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CoMan.Migrations
+namespace CoMan.Data.Migrations
 {
     [DbContext(typeof(CoManDbContext))]
     partial class CoManDbContextModelSnapshot : ModelSnapshot
@@ -126,8 +126,8 @@ namespace CoMan.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<float?>("Mark")
-                        .HasColumnType("real");
+                    b.Property<string>("Mark")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -156,7 +156,7 @@ namespace CoMan.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("Cooperations", (string)null);
+                    b.ToTable("Cooperations");
                 });
 
             modelBuilder.Entity("CoMan.Models.CooperationRequestModel", b =>
@@ -202,7 +202,7 @@ namespace CoMan.Migrations
 
                     b.HasIndex("TopicId");
 
-                    b.ToTable("CooperationRequests", (string)null);
+                    b.ToTable("CooperationRequests");
                 });
 
             modelBuilder.Entity("CoMan.Models.TopicModel", b =>
@@ -246,7 +246,7 @@ namespace CoMan.Migrations
 
                     b.HasIndex("StudentUserId");
 
-                    b.ToTable("Topics", (string)null);
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

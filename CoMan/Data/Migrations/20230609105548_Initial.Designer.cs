@@ -9,10 +9,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CoMan.Migrations
+namespace CoMan.Data.Migrations
 {
     [DbContext(typeof(CoManDbContext))]
-    [Migration("20230604145915_Initial")]
+    [Migration("20230609105548_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -128,8 +128,8 @@ namespace CoMan.Migrations
                     b.Property<DateTime?>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<float?>("Mark")
-                        .HasColumnType("real");
+                    b.Property<string>("Mark")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");

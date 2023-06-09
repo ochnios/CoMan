@@ -203,7 +203,8 @@ namespace CoMan.Services
 
         private Boolean CanBeArchived(CooperationRequestModel cooperationRequest)
         {
-            return cooperationRequest.Status == CooperationRequestStatus.Accepted;
+            return cooperationRequest.Status == CooperationRequestStatus.Accepted ||
+                    cooperationRequest.Status == CooperationRequestStatus.Rejected;
         }
 
         private Boolean CanBeAccepted(CooperationRequestModel cooperationRequest)

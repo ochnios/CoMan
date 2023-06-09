@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -31,9 +32,9 @@ namespace CoMan.Models
         [DisplayName("Comment")]
         public string? Comment { get; set; }
 
-        [RegularExpression(@"^[2345](\.[25])?$", ErrorMessage = "The value must be a correct mark!")]
+        [RegularExpression(@"^[2345](\.5)?$", ErrorMessage = "The value must be a correct mark!")]
         [DisplayName("Mark")]
-        public float? Mark { get; set; }
+        public string? Mark { get; set; }
 
         [DisplayName("Topic")]
         public virtual TopicModel? Topic { get; set; }
