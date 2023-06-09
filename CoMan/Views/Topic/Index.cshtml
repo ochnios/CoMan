@@ -40,6 +40,7 @@
     <script asp-append-version="true">
         var table;
         var includeArchived = false;
+        var onlyMine = false;
 
         $(document).ready(function () {
             table = $("#topics-table").DataTable({
@@ -61,6 +62,7 @@
                     dataType: "json",
                     data: function (d) {
                         d.includeArchived = includeArchived;
+                        d.onlyMine = onlyMine;
                         return JSON.stringify(d);
                     }
                 },
@@ -130,6 +132,29 @@
                 }
                 table.ajax.reload();
             });
+
+            @if ((await AuthorizationService.AuthorizeAsync(User, "RequireTeacher")).Succeeded)
+            {   
+                <text>
+                // Add the "only mine" button
+                var searchContainer = $('.dataTables_length');
+                var buttonHtml = '&nbsp;|&nbsp;<a id="toggleMineButton" href="#">only mine</a>';
+                searchContainer.append(buttonHtml);
+
+                // Event listener for the "onlyMine" button click
+                $("#toggleMineButton").on("click", function() {
+                    var button = $(this);
+                    if (onlyMine) {
+                        button.text("only mine");
+                        onlyMine = false;
+                    } else {
+                        button.text("all");
+                        onlyMine = true;
+                    }
+                    table.ajax.reload();
+                });
+                </text>
+            }
         });
     </script>
 }

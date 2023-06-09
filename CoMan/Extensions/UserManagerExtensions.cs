@@ -9,7 +9,7 @@ namespace CoMan.Extensions
 
         public static async Task<string> GetCurrentUserId(this UserManager<ApplicationUser> userManager) {
             var currentUser = await getCurrentUser(userManager);
-            return currentUser.Id;
+            return currentUser == null ? String.Empty : currentUser.Id;
         }
 
         public static async Task<Boolean> IsCurrentUserInRole(this UserManager<ApplicationUser> userManager, string role)

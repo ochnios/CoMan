@@ -67,6 +67,7 @@ namespace CoMan.Services
             var orderCriteria = "Id";
             var orderAscendingDirection = true;
             var includeArchived = false;
+            var onlyMine = false;
 
             if (dtParameters.Order != null)
             {
@@ -80,8 +81,16 @@ namespace CoMan.Services
                 includeArchived = dtParameters.IncludeArchived == "true";
             }
 
+            if (dtParameters.OnlyMine != null)
+            {
+                onlyMine = dtParameters.OnlyMine == "true";
+            }
+
+             var currentUserId = await _userManager.GetCurrentUserId();
+
             var rawResults = await _unitOfWork.Topics
                 .FindForDatatables((r => 
+                            (!onlyMine || r.Author.Id == currentUserId) &&
                             (includeArchived || r.Status != TopicStatus.Archived) && 
                             (
                                 r.Title.ToUpper().Contains(searchBy) ||

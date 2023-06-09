@@ -54,6 +54,8 @@
 
         public string? IncludeArchived { get; set; }
 
+        public string? OnlyMine { get; set; }
+
     }
 
     public class DtColumn
