@@ -56,6 +56,8 @@
 
         public string? OnlyMine { get; set; }
 
+        public int? CooperationId { get; set; }
+
     }
 
     public class DtColumn

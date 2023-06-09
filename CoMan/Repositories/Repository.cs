@@ -44,6 +44,11 @@ namespace CoMan.Repositories
             return await GetActiveEntities().Where(e => !e.Deleted).ToListAsync();
         }
 
+        public async Task<IEnumerable<TEntity>> GetFilteredAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return await GetActiveEntities().Where(e => !e.Deleted).Where(predicate).ToListAsync();
+        }
+
         public async Task<dynamic> FindForDatatables(Expression<Func<TEntity, bool>> predicate,
             int start, int length, string member, bool ascending)
         {

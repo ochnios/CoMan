@@ -50,6 +50,8 @@ namespace CoMan.Models
         [DisplayName("Teacher")]
         public virtual TeacherUser? Teacher { get; set; }
 
+        public virtual ICollection<CommentModel>? Comments { get; set; }
+
         public Boolean Deleted { get; set; }
     }
 }

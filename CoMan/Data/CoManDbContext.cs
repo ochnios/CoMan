@@ -10,6 +10,7 @@ namespace CoMan.Data
         public DbSet<TopicModel> Topics { get; set; } = null!;
         public DbSet<CooperationRequestModel> CooperationRequests { get; set; } = null!;
         public DbSet<CooperationModel> Cooperations { get; set; } = null!;
+        public DbSet<CommentModel> Comments { get; set; } = null!;
 
         public CoManDbContext(DbContextOptions<CoManDbContext> options)
             : base(options)

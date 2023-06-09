@@ -10,6 +10,7 @@ namespace CoMan.Data
         private TopicRepository _topicRepository = null!;
         private CooperationRequestRepository _cooperationRequestRepository = null!;
         private CooperationRepository _cooperationRepository = null!;
+        private CommentRepository _commentRepository = null!;
 
         public UnitOfWork(CoManDbContext context)
         {
@@ -30,6 +31,9 @@ namespace CoMan.Data
 
         public ICooperationRepository Cooperations =>
             _cooperationRepository ??= new CooperationRepository(_context);
+
+        public ICommentRepository Comments =>
+            _commentRepository ??= new CommentRepository(_context);
 
         public async Task<int> CommitAsync()
         {
