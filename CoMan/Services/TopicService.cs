@@ -66,6 +66,7 @@ namespace CoMan.Services
             // if we have an empty search then just order the results by Id ascending
             var orderCriteria = "Id";
             var orderAscendingDirection = true;
+            var includeArchived = false;
 
             if (dtParameters.Order != null)
             {
@@ -74,12 +75,21 @@ namespace CoMan.Services
                 orderAscendingDirection = dtParameters.Order[0].Dir.ToString().ToLower() == "asc";
             }
 
+            if (dtParameters.IncludeArchived != null)
+            {
+                includeArchived = dtParameters.IncludeArchived == "true";
+            }
+
             var rawResults = await _unitOfWork.Topics
-                .FindForDatatables((r => r.Title.ToUpper().Contains(searchBy) ||
-                           r.Description != null && r.Description.ToUpper().Contains(searchBy) ||
-                           r.Author.FirstName.ToUpper().Contains(searchBy) ||
-                           r.Author.LastName.ToUpper().Contains(searchBy)),
-                           dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
+                .FindForDatatables((r => 
+                            (includeArchived || r.Status != TopicStatus.Archived) && 
+                            (
+                                r.Title.ToUpper().Contains(searchBy) ||
+                                r.Description != null && r.Description.ToUpper().Contains(searchBy) ||
+                                r.Author.FirstName.ToUpper().Contains(searchBy) ||
+                                r.Author.LastName.ToUpper().Contains(searchBy)
+                            )),
+                            dtParameters.Start, dtParameters.Length, orderCriteria, orderAscendingDirection
                 );
 
             List<TopicDatatable> resultsForDatatable = new();

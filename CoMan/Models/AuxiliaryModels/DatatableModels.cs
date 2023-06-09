@@ -52,12 +52,7 @@
 
         public DtSearch? Search { get; set; }
 
-        public string? SortOrder => Columns != null && Order != null && Order.Length > 0
-            ? (Columns[Order[0].Column].Data +
-               (Order[0].Dir == DtOrderDir.Desc ? " " + Order[0].Dir : string.Empty))
-            : null;
-
-        public IEnumerable<string>? AdditionalValues { get; set; }
+        public string? IncludeArchived { get; set; }
 
     }
 
